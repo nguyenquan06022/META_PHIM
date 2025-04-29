@@ -1,0 +1,8 @@
+const userInforControllers = require('../../app/controllers/userInforControllers')
+function router(app) {
+    app.post('/sign-up',userInforControllers.signUp)
+    app.post('/update-avt',userInforControllers.updateAvt)
+    app.post('/update-pass',userInforControllers.updatePass)
+    app.get('/getUserInfor',userInforControllers.showUserInfor)
+}
+module.exports = router
