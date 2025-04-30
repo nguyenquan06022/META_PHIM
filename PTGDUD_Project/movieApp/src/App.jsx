@@ -1,25 +1,38 @@
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import SignIn from "./pages/SignIn";
-import AboutUs from "./pages/AboutUs";
-import Infor from "./pages/Infor";
-import Container from "./pages/Container";
-import NotFound from "./pages/NotFound";
-import Watch from "./pages/watch";
-import ListMovies from "./pages/ListMovies";
-import ListType from "./pages/ListType";
+// import Home from "./pages/Home";
+// import Login from "./pages/Login";
+// import SignIn from "./pages/SignIn";
+// import AboutUs from "./pages/AboutUs";
+// import Infor from "./pages/Infor";
+// import Container from "./pages/Container";
+// import NotFound from "./pages/NotFound";
+// import Watch from "./pages/watch";
+// import ListMovies from "./pages/ListMovies";
+// import ListType from "./pages/ListType";
+import Watch from "./pages/Watch";
 import { type } from "./global/Type";
 import "@coreui/coreui/dist/css/coreui.min.css";
 import { LoadingProvider } from "./global/LoadingProvider";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import User from "./pages/User";
-import OAuthSuccess from "./pages/OAuthSuccess";
+import AboutUs from "./pages/AboutUs";
+// import User from "./pages/User";
+// import OAuthSuccess from "./pages/OAuthSuccess";
+import FilmSummary from "./components/FilmSumary";
 
 function App() {
   return (
+
+
+
+
+
     <LoadingProvider>
       <BrowserRouter>
-        <Routes>
+
+        <Watch></Watch>
+        {/* <FilmSummary></FilmSummary> */}
+
+        {/* <AboutUs></AboutUs> */}
+        {/* <Routes>
           <Route element={<Container />}>
             <Route path="/" element={<Home />} />
             <Route path="/list">
@@ -48,7 +61,7 @@ function App() {
             <Route path="/oauth-success" element={<OAuthSuccess />} />
           </Route>
           <Route path="*" element={<NotFound />} />
-        </Routes>
+        </Routes> */}
       </BrowserRouter>
     </LoadingProvider>
   );
