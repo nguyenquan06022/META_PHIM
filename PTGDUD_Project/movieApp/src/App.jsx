@@ -16,6 +16,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AboutUs from "./pages/AboutUs";
 // import User from "./pages/User";
 // import OAuthSuccess from "./pages/OAuthSuccess";
+import FilmSummary from "./components/FilmSumary";
 
 function App() {
   return (
@@ -28,8 +29,9 @@ function App() {
       <BrowserRouter>
 
         {/* <Watch></Watch> */}
+        <FilmSummary></FilmSummary>
 
-        <AboutUs></AboutUs>
+        {/* <AboutUs></AboutUs> */}
         {/* <Routes>
           <Route element={<Container />}>
             <Route path="/" element={<Home />} />
