@@ -90,7 +90,6 @@ function ListMovies({ title }) {
         state={{ params, setParams }}
         what={{ useWhat, setUseWhat }}
       />
-      <br />
       {movieType == "find_movies" && (
         <Search
           state={{ keyWord, setKeyWord }}

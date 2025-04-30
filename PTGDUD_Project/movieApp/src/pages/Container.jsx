@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import ScrollTopButton from "../components/ScrollTopButton";
 import logo from "../assets/images/logo.png";
+import { LoginContext } from "../global/LoginContext";
+import { ToastContainer } from "react-toastify";
 function Container() {
+  const { user } = useContext(LoginContext);
   const [hasOpacity, setHasOpacity] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const location = useLocation();
@@ -24,6 +27,17 @@ function Container() {
     <div
       style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
     >
+      <ToastContainer
+        position="top-right" // <-- Vị trí góc trên bên phải
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <nav
         ref={navRef}
         className="navbar bg-dark navbar-dark"
@@ -142,21 +156,45 @@ function Container() {
               </Link>
             </li>
           </ul>
-
-          <div className="login-btn">
-            <Link to="/login" className="nav-link">
-              <button
-                className="btn btn-warning"
+          {user && user.username ? (
+            <Link to={`/user/${user.accout_ID}`} className="nav-link">
+              <div
+                className="rounded-circle"
                 style={{
-                  fontWeight: "bold",
-                  backgroundColor: "rgb(235, 200, 113)",
-                  color: "black",
+                  width: "50px",
+                  height: "50px",
+                  overflow: "hidden",
+                  border: "2px solid rgb(235, 200, 113)",
+                  cursor: "pointer",
                 }}
               >
-                Đăng nhập
-              </button>
+                <img
+                  src={user.avt}
+                  alt="Avatar"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
             </Link>
-          </div>
+          ) : (
+            <div className="login-btn">
+              <Link to="/login" className="nav-link">
+                <button
+                  className="btn btn-warning"
+                  style={{
+                    fontWeight: "bold",
+                    backgroundColor: "rgb(235, 200, 113)",
+                    color: "black",
+                  }}
+                >
+                  Đăng nhập
+                </button>
+              </Link>
+            </div>
+          )}
         </div>
       </nav>
 

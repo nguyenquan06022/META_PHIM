@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
+import { LoginContext } from "../global/LoginContext";
 
 function User() {
+  const { setUser } = useContext(LoginContext);
   const { id } = useParams();
   const [userName, setUserName] = useState("quanidol62");
   const [activeTab, setActiveTab] = useState("account");
@@ -148,7 +150,7 @@ function User() {
         const res = await axios.get("http://localhost:3000/getUserInfor", {
           withCredentials: true,
         });
-        console.log(res);
+        setUser(res.data);
       } catch (error) {
         console.log(error);
       }

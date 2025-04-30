@@ -28,14 +28,10 @@ function Home() {
     }
     fetchData();
   }, []);
-
-  console.log(listVideosDemo);
-
   return (
     <div>
       <div>
         <MovieCarousel movies={listVideosDemo} />
-        {/* <VideoDemo videoList={listVideosDemo} /> */}
       </div>
       <br />
       <div style={{ padding: "0px 25px" }}>

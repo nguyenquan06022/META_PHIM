@@ -1,9 +1,8 @@
-/* General Styles */
-.blog-page {
+General Styles .blog-page {
     font-family: "Arial", sans-serif;
 }
 
-/* Navigation */
+/*
 .nav-container {
     position: relative;
 }
@@ -19,7 +18,6 @@
     z-index: 1000;
 }
 
-/* Hero Section */
 .hero-section {
     position: relative;
     height: 500px;
@@ -46,7 +44,6 @@
     background-image: url("/placeholder.svg?height=500&width=500");
 }
 
-/* Cards Container */
 .cards-container {
     position: absolute;
     left: 50%;
@@ -63,14 +60,13 @@
     gap: 20px;
 }
 
-/* Member Cards */
 .member-card {
     flex: 1 1 calc(50% - 10px);
     min-width: 450px;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    
+
 }
 
 .card-body {
@@ -96,7 +92,6 @@
     margin-top: 8px;
 }
 
-/* Image Container */
 .image-container {
     position: relative;
     flex: 1;
@@ -126,7 +121,6 @@
     height: auto;
 }
 
-/* Content Section */
 .content-section {
     padding: 48px 0;
 }
@@ -150,7 +144,6 @@
     text-decoration: underline;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .cards-row {
         flex-direction: column;
@@ -162,11 +155,8 @@
 }
 
 .profile-image {
-       /* hoặc 100%, hoặc auto */
-    height: 300px;       /* giữ tỉ lệ ảnh */
-    object-fit: cover;  /* hoặc contain tùy ý */
+    height: 300px;
+    object-fit: cover;
     display: block;
-  }
-
-
-  
+}
+*/

@@ -1,15 +1,79 @@
 import { Link } from "react-router-dom";
 import API from "../api/index";
 import { useEffect, useState } from "react";
-import { FaPlay, FaHeart, FaInfoCircle } from "react-icons/fa"; // import icon từ react-icons
+import { FaPlay, FaHeart, FaInfoCircle } from "react-icons/fa";
+import { toast } from "react-toastify";
+import axios from "axios";
+import "../assets/css/Card.css";
 
 function Card({ movie }) {
-  const [data, setData] = useState();
+  const [linkFirstVideo, setLinkFirstVideo] = useState("#");
+  const [isLiked, setIsLiked] = useState(false);
+
+  const toggleLike = () => {
+    setIsLiked(!isLiked);
+  };
+
+  const handleAddLoveFilm = async () => {
+    if (!movie) return;
+
+    const obj = {
+      category:
+        movie.category?.map((cat) => ({
+          id: cat.id,
+          name: cat.name,
+          slug: cat.slug,
+        })) || [],
+      chap: movie.episode_current || "",
+      imdb: movie.imdb?.id || "",
+      tmdb: {
+        type: movie.tmdb?.type || "",
+        id: movie.tmdb?.id || "",
+        season: movie.tmdb?.season || null,
+        vote_average: movie.tmdb?.vote_average || 0,
+        vote_count: movie.tmdb?.vote_count || 0,
+      },
+      img: movie.thumb_url || "",
+      lang: movie.lang || "",
+      name: movie.name || "",
+      originName: movie.origin_name || "",
+      poster_url: movie.poster_url || "",
+      quality: movie.quality || "",
+      slug: movie.slug || "",
+      time: movie.time || "",
+      year: movie.year || new Date().getFullYear(),
+    };
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/handleLoveFilm",
+        obj,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res);
+      if (res.data.message == "Đã bỏ thích") {
+        toast.info("Đã bỏ thích");
+      } else if (
+        res.data.message == "Thêm vào danh sách yêu thích thành công"
+      ) {
+        toast.success("Đã thêm phim vào danh sách yêu thích");
+      }
+    } catch (error) {
+      console.log("Lỗi khi thêm phim:", error);
+      if (error.response.data.message == "Chưa đăng nhập")
+        toast.error("Vui lòng đăng nhập để thực hiện hành động");
+    }
+  };
 
   useEffect(() => {
     async function fetchData() {
-      const infor = await API.getInforMovies(movie.slug);
-      setData(infor);
+      const eps = await API.getEps(movie.slug);
+      const link = `/watch/${movie.slug}?server=${
+        eps[0].server_name.split("#")[1]
+      }&ep=${eps[0].server_data[0].name}`;
+      setLinkFirstVideo(link);
     }
     fetchData();
   }, []);
@@ -19,7 +83,6 @@ function Card({ movie }) {
     if (decimalPart && decimalPart.length > 1) return num.toFixed(1);
     return num;
   };
-
   return (
     <Link to={`/infor/${movie.slug}`} style={{ textDecoration: "none" }}>
       <div
@@ -65,8 +128,8 @@ function Card({ movie }) {
             >
               {movie.originName}
             </p>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Link to="" style={{ textDecoration: "none" }}>
+            <div style={{ display: "flex", gap: 8 }}>
+              <Link to={linkFirstVideo} style={{ textDecoration: "none" }}>
                 <button
                   className="btn btn-warning"
                   style={{
@@ -83,6 +146,12 @@ function Card({ movie }) {
               </Link>
               <button
                 className="btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  toggleLike();
+                  handleAddLoveFilm();
+                }}
                 style={{
                   color: "white",
                   border: "1px solid white",
@@ -90,7 +159,7 @@ function Card({ movie }) {
                   alignItems: "center",
                 }}
               >
-                <FaHeart />
+                {isLiked ? <FaHeart color="red" /> : <FaHeart />}
               </button>
               <button
                 className="btn"
@@ -134,6 +203,7 @@ function Card({ movie }) {
           <div
             className="imdb"
             style={{
+              color: "black",
               position: "absolute",
               zIndex: 1,
               top: 0,
