@@ -28,8 +28,8 @@ function App() {
     <LoadingProvider>
       <BrowserRouter>
 
-        {/* <Watch></Watch> */}
-        <FilmSummary></FilmSummary>
+        <Watch></Watch>
+        {/* <FilmSummary></FilmSummary> */}
 
         {/* <AboutUs></AboutUs> */}
         {/* <Routes>

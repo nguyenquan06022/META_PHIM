@@ -2,20 +2,64 @@ import { useEffect, useState } from "react";
 import VideoPlayer from "../components/VideoPlayer";
 import ListEp from "../components/ListEp";
 import FbComment from "../components/FbComment";
-// import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import API from "../api/index";
-import avt from "/avatar/01.jpg"
 function Watch() {
+  const useQuery = () => {
+    return new URLSearchParams(useLocation().search);
+  };
+  const findLink = (serverNumber, episodeName, servers) => {
+    const server = servers.find((s) => {
+      const match = s.server_name.match(/#(\d+)/);
+      return match && match[1] === String(serverNumber);
+    });
 
+    if (!server) {
+      console.log("Không tìm thấy server phù hợp.");
+      return null;
+    }
+    const episode = server.server_data.find(
+      (e) => e.name.toLowerCase() === episodeName.toLowerCase()
+    );
+
+    if (!episode) {
+      console.log("Không tìm thấy tập phù hợp.");
+      return null;
+    }
+    return episode.link_embed;
+  };
+
+  const [movie, setMovie] = useState();
+  const [slug, setSlug] = useState();
+  const [ep, setEp] = useState();
+  const [server, setSever] = useState();
+  const [linkVideo, setLinkVideo] = useState();
+  const query = useQuery();
+  const location = useLocation();
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = await API.getInforMovies(location.pathname.split("/")[2]);
+        setEp(query.get("ep"));
+        setSever(query.get("server"));
+        setSlug(location.pathname.split("/")[2]);
+        setMovie(data);
+        setLinkVideo(
+          findLink(query.get("server"), query.get("ep"), data.episodes)
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    fetchData();
+  }, [location]);
+  if (!linkVideo) {
+    return <h1>Loading...</h1>;
+  }
   return (
     <div style={{ backgroundColor: "rgb(25, 28, 36)" }}>
       <div className="video-container" style={{ width: "100%" }}>
-        <VideoPlayer
-          width="100%"
-          height="100%"
-          link="https://player.vimeo.com/external/332503492.sd.mp4?s=2fc8f88c3893c3e12c72ebfd700ef7597223987f&profile_id=164"
-        />
-
+        <VideoPlayer width={"100%"} height={"100%"} link={linkVideo} />
       </div>
       <div style={{ padding: "0px 25px" }}>
         <div
@@ -57,44 +101,44 @@ function Watch() {
           <div className="col-md-5 col-12">
             <div className="row">
               <div className="col-4">
-                <img src={avt} alt="" style={{ width: "100%" }} />
+                <img src={movie.thumb_url} alt="" style={{ width: "100%" }} />
               </div>
               <div className="col-8">
                 <h5 className="card-title" style={{ color: "white" }}>
-                  name
+                  {movie.name}
                 </h5>
                 <p
                   className="card-text"
                   style={{ color: "rgb(235, 200, 113)" }}
                 >
-                  origiename
+                  {movie.origin_name}
                 </p>
                 <div style={{ display: "flex", marginBottom: 5 }}>
-                  <span className="badge bg-secondary me-2">nam</span>
+                  <span className="badge bg-secondary me-2">{movie.year}</span>
                   <span className="badge bg-secondary me-2">
-                    chat luong tot
+                    {movie.quality}
                   </span>
-                  <span className="badge bg-secondary me-2">lang</span>
+                  <span className="badge bg-secondary me-2">{movie.lang}</span>
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap" }}>
-                  {/* {movie.category.map((item) => ( */}
-                  <span
-                    // key={item.id}
-                    className="badge bg-secondary me-2 mb-2"
-                  >
-                    {/* {item.name} */} nghiaa
-                  </span>
-                  {/* ))} */}
+                  {movie.category.map((item) => (
+                    <span
+                      key={item.id}
+                      className="badge bg-secondary me-2 mb-2"
+                    >
+                      {item.name}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
           <div className="col-md-7 col-12">
-            {/* <ListEp
-              // curEp={movie.episode_current}
-              // eps={movie.episodes}
-              // activeItem={ep}
-            /> */}
+            <ListEp
+              curEp={movie.episode_current}
+              eps={movie.episodes}
+              activeItem={ep}
+            />
           </div>
           <div className="col-12">
             <div id="comments">
