@@ -13,6 +13,7 @@ import { type } from "./global/Type";
 import "@coreui/coreui/dist/css/coreui.min.css";
 import { LoadingProvider } from "./global/LoadingProvider";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AboutUs from "./pages/AboutUs";
 // import User from "./pages/User";
 // import OAuthSuccess from "./pages/OAuthSuccess";
 
@@ -26,7 +27,9 @@ function App() {
     <LoadingProvider>
       <BrowserRouter>
 
-        <Watch></Watch>
+        {/* <Watch></Watch> */}
+
+        <AboutUs></AboutUs>
         {/* <Routes>
           <Route element={<Container />}>
             <Route path="/" element={<Home />} />
