@@ -1,10 +1,10 @@
-// import Home from "./pages/Home";
+ import Home from "./pages/Home";
 // import Login from "./pages/Login";
 // import SignIn from "./pages/SignIn";
 // import AboutUs from "./pages/AboutUs";
 // import Infor from "./pages/Infor";
-// import Container from "./pages/Container";
-// import NotFound from "./pages/NotFound";
+import Container from "./pages/Container";
+import NotFound from "./pages/NotFound";
 // import Watch from "./pages/watch";
 // import ListMovies from "./pages/ListMovies";
 // import ListType from "./pages/ListType";
@@ -17,25 +17,26 @@ import AboutUs from "./pages/AboutUs";
 // import User from "./pages/User";
 // import OAuthSuccess from "./pages/OAuthSuccess";
 import FilmSummary from "./components/FilmSumary";
+import Dashboard from "./pages/DashBoard";
+import CustomChart from "./components/Chart";
 
 function App() {
   return (
-
-
-
-
-
     <LoadingProvider>
       <BrowserRouter>
 
-        <Watch></Watch>
+        {/* <Watch></Watch> */}
+
+
         {/* <FilmSummary></FilmSummary> */}
 
         {/* <AboutUs></AboutUs> */}
-        {/* <Routes>
+        <Routes>
           <Route element={<Container />}>
+
+            <Route path="/Dashboard" element={<Dashboard />} />
             <Route path="/" element={<Home />} />
-            <Route path="/list">
+            {/* <Route path="/list">
               <Route path="find_movies" element={<ListMovies title="" />} />
               <Route
                 path="top_movies"
@@ -50,18 +51,18 @@ function App() {
                   />
                 );
               })}
-            </Route>
-            <Route path="/listType/:slug" element={<ListType />}></Route>
+            </Route> */}
+            {/* <Route path="/listType/:slug" element={<ListType />}></Route>
             <Route path="/about_us" element={<AboutUs />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/infor/:slug" element={<Infor />} />
             <Route path="/watch/:slug" element={<Watch />}></Route>
             <Route path="/user/:id" element={<User />}></Route>
-            <Route path="/oauth-success" element={<OAuthSuccess />} />
+            <Route path="/oauth-success" element={<OAuthSuccess />} /> */}
           </Route>
           <Route path="*" element={<NotFound />} />
-        </Routes> */}
+        </Routes>
       </BrowserRouter>
     </LoadingProvider>
   );
