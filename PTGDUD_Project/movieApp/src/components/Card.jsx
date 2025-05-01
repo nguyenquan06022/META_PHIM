@@ -14,7 +14,7 @@ function Card({ movie }) {
     setIsLiked(!isLiked);
   };
 
-  const handleAddLoveFilm = async () => {
+  const handleLoveFilm = async () => {
     if (!movie) return;
 
     const obj = {
@@ -52,7 +52,6 @@ function Card({ movie }) {
           withCredentials: true,
         }
       );
-      console.log(res);
       if (res.data.message == "Đã bỏ thích") {
         toast.info("Đã bỏ thích");
       } else if (
@@ -150,7 +149,7 @@ function Card({ movie }) {
                   e.stopPropagation();
                   e.preventDefault();
                   toggleLike();
-                  handleAddLoveFilm();
+                  handleLoveFilm();
                 }}
                 style={{
                   color: "white",

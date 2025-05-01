@@ -157,7 +157,10 @@ function Container() {
             </li>
           </ul>
           {user && user.username ? (
-            <Link to={`/user/${user.accout_ID}`} className="nav-link">
+            <Link
+              to={`/user/${user.accout_ID ? user.accout_ID : user._id}`}
+              className="nav-link"
+            >
               <div
                 className="rounded-circle"
                 style={{

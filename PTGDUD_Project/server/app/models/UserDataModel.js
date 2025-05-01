@@ -1,44 +1,60 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const watchContinue = new Schema({
-  slug: {
-    type: String,
-    require: true,
+const watchContinue = new Schema(
+  {
+    slug: {
+      type: String,
+      require: true,
+    },
+    image: {
+      type: String,
+      require: true,
+    },
+    name: {
+      type: String,
+      require: true,
+    },
+    nameEp: {
+      type: String,
+      require: true,
+    },
+    linkEp: {
+      type: String,
+      require: true,
+    },
+    timeContinue: {
+      type: Number,
+      default: 0,
+    },
+    percentRemain: {
+      type: Number,
+      default: 0,
+    },
+    timeTotal: {
+      type: Number,
+      default: 0,
+    },
+    category: [
+      {
+        id: String,
+        name: String,
+        slug: String,
+      },
+    ],
+    lang: String,
+    originName: String,
+    poster_url: String,
+    quality: String,
+    year: Number,
+    time: String,
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  image: {
-    type: String,
-    require: true,
-  },
-  name: {
-    type: String,
-    require: true,
-  },
-  nameEp: {
-    type: String,
-    require: true,
-  },
-  linkEp: {
-    type: String,
-    require: true,
-  },
-  timeContinue: {
-    type: Number,
-    require: 0,
-  },
-  percentRemain: {
-    type: Number,
-    default: 0,
-  },
-  timeTotal: {
-    type: Number,
-    require: 0,
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
-});
+  { timestamps: true }
+);
 
 const tmdbSchema = new Schema(
   {
@@ -48,7 +64,7 @@ const tmdbSchema = new Schema(
     vote_average: Number,
     vote_count: Number,
   },
-  { _id: false } // để không sinh _id con
+  { _id: false }
 );
 
 const loveFilm = new Schema({
@@ -61,7 +77,7 @@ const loveFilm = new Schema({
   ],
   chap: String,
   imdb: String,
-  tmdb: tmdbSchema, // ✅ sửa chỗ này
+  tmdb: tmdbSchema,
   img: String,
   lang: String,
   name: String,
@@ -87,7 +103,7 @@ const watchLater = new Schema({
   ],
   chap: String,
   imdb: String,
-  tmdb: tmdbSchema, // ✅ sửa giống như trên
+  tmdb: tmdbSchema,
   img: String,
   lang: String,
   name: String,

@@ -216,6 +216,60 @@ class userInforControllers {
       });
   }
 
+  handleWatchLater(req, res, next) {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Chưa đăng nhập" });
+    }
+
+    const filmData = req.body;
+    const userId = req.user.id || req.user._id;
+
+    UserData.findOne({ accout_ID: userId })
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({ message: "Không tìm thấy người dùng" });
+        }
+
+        const existingFilm = user.watchLaters.find(
+          (film) => film.slug === filmData.slug
+        );
+
+        if (!existingFilm) {
+          // Thêm mới nếu chưa có
+          user.watchLaters.push({ ...filmData, isDeleted: false });
+
+          return user.save().then(() => {
+            res.status(200).json({
+              message: "Thêm vào danh sách xem sau thành công",
+            });
+          });
+        } else {
+          // Nếu đã có, cập nhật isDeleted
+          if (existingFilm.isDeleted) {
+            existingFilm.isDeleted = false;
+
+            return user.save().then(() => {
+              res.status(200).json({
+                message: "Thêm vào danh sách xem sau thành công",
+              });
+            });
+          } else {
+            existingFilm.isDeleted = true;
+
+            return user.save().then(() => {
+              res.status(200).json({
+                message: "Đã xóa khỏi danh sách xem sau",
+              });
+            });
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Lỗi xử lý xem sau:", error);
+        next(error);
+      });
+  }
+
   getCurrentUser(req, res) {
     if (req.isAuthenticated()) {
       return res.json({ user: req.user });

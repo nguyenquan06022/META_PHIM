@@ -152,7 +152,6 @@ function ListMovies({ title }) {
                   </div>
                 ))
             : listMovies.map((item, index) => {
-                console.log(item);
                 return (
                   <div key={index} className="col-6 col-md-4 col-lg-3">
                     <Card movie={item}></Card>

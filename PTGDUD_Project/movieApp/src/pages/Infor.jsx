@@ -5,13 +5,17 @@ import VideoPlayer from "../components/VideoPlayer";
 import FbComment from "../components/FbComment";
 import ListEp from "../components/ListEp";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "../assets/css/infor.css";
+import LoadingOverlay from "../components/LoadingOverlay";
 import {
   FaPlay,
   FaHeart,
-  FaShareAlt,
   FaCommentDots,
   FaPlus,
   FaShare,
+  FaCheck,
 } from "react-icons/fa";
 function Infor() {
   const { slug } = useParams();
@@ -22,6 +26,119 @@ function Infor() {
     if (decimalPart && decimalPart.length > 1) return num.toFixed(1);
     return num;
   };
+  const [isLiked, setIsLiked] = useState(false);
+  const [isWatchLater, setIsWatchLater] = useState(false);
+  const toggleLike = () => {
+    setIsLiked(!isLiked);
+  };
+
+  const toggleWatchLater = () => {
+    setIsWatchLater(!isWatchLater);
+  };
+  const handleLoveFilm = async () => {
+    if (!movie) return;
+
+    const obj = {
+      category:
+        movie.category?.map((cat) => ({
+          id: cat.id,
+          name: cat.name,
+          slug: cat.slug,
+        })) || [],
+      chap: movie.episode_current || "",
+      imdb: movie.imdb?.id || "",
+      tmdb: {
+        type: movie.tmdb?.type || "",
+        id: movie.tmdb?.id || "",
+        season: movie.tmdb?.season || null,
+        vote_average: movie.tmdb?.vote_average || 0,
+        vote_count: movie.tmdb?.vote_count || 0,
+      },
+      img: movie.thumb_url || "",
+      lang: movie.lang || "",
+      name: movie.name || "",
+      originName: movie.origin_name || "",
+      poster_url: movie.poster_url || "",
+      quality: movie.quality || "",
+      slug: movie.slug || "",
+      time: movie.time || "",
+      year: movie.year || new Date().getFullYear(),
+    };
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/handleLoveFilm",
+        obj,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res);
+      if (res.data.message == "Đã bỏ thích") {
+        toast.info("Đã bỏ thích");
+      } else if (
+        res.data.message == "Thêm vào danh sách yêu thích thành công"
+      ) {
+        toast.success("Đã thêm phim vào danh sách yêu thích");
+      }
+    } catch (error) {
+      console.log("Lỗi khi thêm phim:", error);
+      if (error.response.data.message == "Chưa đăng nhập")
+        toast.error("Vui lòng đăng nhập để thực hiện hành động");
+    }
+  };
+
+  const handleWatchLater = async () => {
+    if (!movie) return;
+
+    const obj = {
+      category:
+        movie.category?.map((cat) => ({
+          id: cat.id,
+          name: cat.name,
+          slug: cat.slug,
+        })) || [],
+      chap: movie.episode_current || "",
+      imdb: movie.imdb?.id || "",
+      tmdb: {
+        type: movie.tmdb?.type || "",
+        id: movie.tmdb?.id || "",
+        season: movie.tmdb?.season || null,
+        vote_average: movie.tmdb?.vote_average || 0,
+        vote_count: movie.tmdb?.vote_count || 0,
+      },
+      img: movie.thumb_url || "",
+      lang: movie.lang || "",
+      name: movie.name || "",
+      originName: movie.origin_name || "",
+      poster_url: movie.poster_url || "",
+      quality: movie.quality || "",
+      slug: movie.slug || "",
+      time: movie.time || "",
+      year: movie.year || new Date().getFullYear(),
+    };
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/handleWatchLater",
+        obj,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res);
+      if (res.data.message === "Đã xóa khỏi danh sách xem sau") {
+        toast.info("Đã xóa khỏi danh sách xem sau");
+      } else if (res.data.message === "Thêm vào danh sách xem sau thành công") {
+        toast.success("Đã thêm phim vào danh sách xem sau");
+      }
+    } catch (error) {
+      console.log("Lỗi khi thêm vào danh sách xem sau:", error);
+      if (error.response?.data?.message === "Chưa đăng nhập")
+        toast.error("Vui lòng đăng nhập để thực hiện hành động");
+    }
+  };
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -35,7 +152,7 @@ function Infor() {
   }, [slug]);
 
   if (!movie) {
-    return <h1>Loading...</h1>;
+    return <LoadingOverlay isLoading={movie == null}></LoadingOverlay>;
   }
 
   return (
@@ -264,7 +381,10 @@ function Infor() {
           </div>
         </div>
         <div className="col-md-8 col-12">
-          <div className="control" style={{ fontSize: 20 }}>
+          <div
+            className="control"
+            style={{ fontSize: 20, display: "flex", gap: 5 }}
+          >
             <Link
               to={`/watch/${slug}?server=${
                 movie.episodes[0].server_name.split("#")[1]
@@ -274,7 +394,8 @@ function Infor() {
               <button
                 className="btn btn-warning rounded-pill"
                 style={{
-                  padding: "10px",
+                  gap: 5,
+                  padding: "12px 18px",
                   fontWeight: "bold",
                   display: "flex",
                   alignItems: "center",
@@ -284,19 +405,33 @@ function Infor() {
                 <FaPlay /> Xem ngay
               </button>
             </Link>
-            <button className="btn btn-secondary btn-hover">
-              <FaHeart />
+            <button
+              onClick={() => {
+                toggleLike();
+                handleLoveFilm();
+              }}
+              className="btnInfor btn-hoverInfor"
+            >
+              {isLiked ? <FaHeart className="heart-active" /> : <FaHeart />}
               {" Yêu thích"}
             </button>
-            <button className="btn btn-secondary btn-hover">
-              <FaPlus />
+
+            <button
+              onClick={() => {
+                toggleWatchLater();
+                handleWatchLater();
+              }}
+              className="btnInfor btn-hoverInfor"
+            >
+              {isWatchLater ? <FaCheck className="check-active" /> : <FaPlus />}
               {" Xem sau"}
             </button>
-            <button className="btn btn-secondary btn-hover">
+
+            <button className="btnInfor btn-hoverInfor">
               <FaShare />
               {" Chia sẻ"}
             </button>
-            <button className="btn btn-secondary btn-hover">
+            <button className="btnInfor btn-hoverInfor">
               <a href="#comments" style={{ all: "unset" }}>
                 <FaCommentDots />
                 {" Bình luận"}

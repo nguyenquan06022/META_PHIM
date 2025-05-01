@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import VideoPlayer from "../components/VideoPlayer";
+import { useEffect, useState, useRef } from "react";
 import ListEp from "../components/ListEp";
 import FbComment from "../components/FbComment";
 import { useLocation } from "react-router-dom";
+import LoadingOverlay from "../components/LoadingOverlay";
+import VideoPlayerMain from "../components/VideoPlayerMain";
 import API from "../api/index";
 function Watch() {
   const useQuery = () => {
@@ -26,9 +27,10 @@ function Watch() {
       console.log("Không tìm thấy tập phù hợp.");
       return null;
     }
-    return episode.link_embed;
+    return episode.link_m3u8;
   };
 
+  const videoRef = useRef(null);
   const [movie, setMovie] = useState();
   const [slug, setSlug] = useState();
   const [ep, setEp] = useState();
@@ -36,6 +38,7 @@ function Watch() {
   const [linkVideo, setLinkVideo] = useState();
   const query = useQuery();
   const location = useLocation();
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -53,13 +56,33 @@ function Watch() {
     }
     fetchData();
   }, [location]);
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (videoRef.current) {
+        const current = videoRef.current.currentTime;
+        const duration = videoRef.current.duration;
+        console.log(`Thời lượng đã xem: ${current.toFixed(2)}s`);
+        console.log(`Tổng thời lượng video: ${duration.toFixed(2)}s`);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
   if (!linkVideo) {
-    return <h1>Loading...</h1>;
+    return <LoadingOverlay isLoading={linkVideo == null}></LoadingOverlay>;
   }
   return (
     <div style={{ backgroundColor: "rgb(25, 28, 36)" }}>
       <div className="video-container" style={{ width: "100%" }}>
-        <VideoPlayer width={"100%"} height={"100%"} link={linkVideo} />
+        <VideoPlayerMain
+          linkVideo={linkVideo}
+          ref={videoRef}
+          movie={movie}
+        ></VideoPlayerMain>
       </div>
       <div style={{ padding: "0px 25px" }}>
         <div

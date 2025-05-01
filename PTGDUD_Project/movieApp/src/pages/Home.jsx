@@ -16,7 +16,7 @@ function Home() {
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      const videosDemo = await API.getVideoForHomePage(3);
+      const videosDemo = await API.getVideoForHomePage(5);
       const suggestMovies = await API.getTypeMovies("top_movies", 1);
       const seriesMovies = await API.getTypeMovies("phim-bo", 1);
       const singleMovies = await API.getTypeMovies("phim-le", 1);
