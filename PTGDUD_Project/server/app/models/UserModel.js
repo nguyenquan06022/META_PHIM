@@ -19,7 +19,8 @@ const UserModel = new Schema({
         default : 'avt1'
     }
     }, {
-    collection : 'Users'
+    collection : 'Users',
+    timestamps : true
 })
 
 module.exports = mongoose.model('Users',UserModel)
