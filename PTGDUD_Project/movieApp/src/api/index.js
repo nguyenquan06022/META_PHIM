@@ -86,6 +86,7 @@ class API {
                 return [];
             });
     }
+    
     searchMovies({moviesType, page, sortBy, type, nation, year}) {
         return axios
             .get(

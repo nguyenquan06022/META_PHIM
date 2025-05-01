@@ -18,7 +18,7 @@ const watchContinue = new Schema({
         type: String,
         require: true
     },
-    linkEp : {
+    linkEp: {
         type: String,
         require: true
     },
@@ -42,30 +42,30 @@ const watchContinue = new Schema({
 
 const loveFilm = new Schema({
     category: [
-    {
-        id: String,
-      name: String,
-      slug: String
-    }
-  ],
-  chap: String,
-  imdb: Number,
-  img: String,
-  lang: String,
-  name: String,
-  originName: String,
-  pagination: {
-    totalItems: Number,
-    totalItemsPerPage: Number,
-    currentPage: Number,
-    pageRanges: Number
-  },
-  poster_url: String,
-  quality: String,
-  slug: String,
-  time: String,
-  year: Number,
-  isDeleted: {
+        {
+            id: String,
+            name: String,
+            slug: String
+        }
+    ],
+    chap: String,
+    imdb: Number,
+    img: String,
+    lang: String,
+    name: String,
+    originName: String,
+    pagination: {
+        totalItems: Number,
+        totalItemsPerPage: Number,
+        currentPage: Number,
+        pageRanges: Number
+    },
+    poster_url: String,
+    quality: String,
+    slug: String,
+    time: String,
+    year: Number,
+    isDeleted: {
         type: Boolean,
         default: false
     }
@@ -73,30 +73,30 @@ const loveFilm = new Schema({
 
 const watchLater = new Schema({
     category: [
-    {
-        id: String,
-      name: String,
-      slug: String
-    }
-  ],
-  chap: String,
-  imdb: Number,
-  img: String,
-  lang: String,
-  name: String,
-  originName: String,
-  pagination: {
-    totalItems: Number,
-    totalItemsPerPage: Number,
-    currentPage: Number,
-    pageRanges: Number
-  },
-  poster_url: String,
-  quality: String,
-  slug: String,
-  time: String,
-  year: Number,
-  isDeleted: {
+        {
+            id: String,
+            name: String,
+            slug: String
+        }
+    ],
+    chap: String,
+    imdb: Number,
+    img: String,
+    lang: String,
+    name: String,
+    originName: String,
+    pagination: {
+        totalItems: Number,
+        totalItemsPerPage: Number,
+        currentPage: Number,
+        pageRanges: Number
+    },
+    poster_url: String,
+    quality: String,
+    slug: String,
+    time: String,
+    year: Number,
+    isDeleted: {
         type: Boolean,
         default: false
     }
@@ -108,11 +108,11 @@ const UserData = new Schema({
         type: String,
         required: true
     },
-    watchContinues : [watchContinue],
+    watchContinues: [watchContinue],
     loveFilms: [loveFilm],
-    watchLaters : [watchLater]
+    watchLaters: [watchLater]
 }, {
-    collection : 'UserDatas'
+    collection: 'UserDatas'
 });
 
-module.exports = mongoose.model('UserDatas',UserData)
+module.exports = mongoose.model('UserDatas', UserData)

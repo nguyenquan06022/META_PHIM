@@ -6,6 +6,8 @@ import { FaPlay, FaHeart, FaInfoCircle } from "react-icons/fa"; // import icon t
 function Card({ movie }) {
   const [data, setData] = useState();
 
+  console.log("Card", movie);
+
   useEffect(() => {
     async function fetchData() {
       const infor = await API.getInforMovies(movie.slug);
