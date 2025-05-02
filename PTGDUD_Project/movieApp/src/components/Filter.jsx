@@ -13,11 +13,14 @@ import {
 import Select from "./Select";
 import API from "../api/index";
 import { type } from "../global/Type";
+import { useLocation } from "react-router-dom";
 
 // Make sure to import the CSS
 // import "../styles/MovieFilter.css"
 
 function MovieFilter({ activeItem, state, what }) {
+  console.log("end");
+  const location = useLocation();
   const [categories, setCategories] = useState([]);
   const [types, setTypes] = useState([]);
   const [nations, setNations] = useState([]);

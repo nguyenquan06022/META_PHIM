@@ -66,8 +66,6 @@ function Card({ movie }) {
     }
   };
 
-  console.log("Card", movie);
-
   useEffect(() => {
     async function fetchData() {
       const eps = await API.getEps(movie.slug);
@@ -77,7 +75,7 @@ function Card({ movie }) {
       setLinkFirstVideo(link);
     }
     fetchData();
-  }, []);
+  }, [movie]);
 
   const fixMoreThanOneDecimalPlace = (num) => {
     let decimalPart = num.toString().split(".")[1];

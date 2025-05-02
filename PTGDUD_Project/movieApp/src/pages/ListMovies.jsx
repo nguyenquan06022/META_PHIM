@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import Filter from "../components/Filter";
 import Search from "../components/Search";
 import API from "../api/index";
@@ -7,17 +7,15 @@ import PaginationRounded from "../components/PaginationRounded";
 import Skeleton from "@mui/material/Skeleton";
 import { LoadingContext } from "../global/LoadingContext";
 import { useLocation } from "react-router-dom";
+
 function ListMovies({ title }) {
   const location = useLocation();
-  const [useWhat, setUseWhat] = useState("");
   const movieType = location.pathname.split("/")[2];
+  const [useWhat, setUseWhat] = useState("");
   const [activeItem, setActiveItem] = useState({});
   const [listMovies, setListMovies] = useState([]);
   const [pagiSetting, setPagiSetting] = useState({});
-  const [keyWord, setKeyWord] = useState({
-    key: "",
-    page: 1,
-  });
+  const [keyWord, setKeyWord] = useState({ key: "", page: 1 });
   const [params, setParams] = useState({
     loaiPhim: "",
     theLoai: "",
@@ -27,62 +25,67 @@ function ListMovies({ title }) {
     page: 1,
   });
   const { loading, setLoading } = useContext(LoadingContext);
+  const isFirstLoad = useRef(true);
+
+  // khi route thay đổi (mount hoặc back)
   useEffect(() => {
-    async function fetchData() {
+    async function fetchType() {
       setLoading(true);
-      if (movieType == "top_movies") {
-        setActiveItem({
-          actives: ["tmdb.vote_average", "phim-moi"],
-          disables: ["sapXep", "loaiPhim"],
-        });
-      } else if (movieType == "find_movies") {
-        setActiveItem({
-          actives: [""],
-          disables: [""],
-        });
-      } else {
-        setActiveItem({
-          actives: [movieType],
-          disables: ["loaiPhim"],
-        });
+      let activeConfig;
+      switch (movieType) {
+        case "top_movies":
+          activeConfig = {
+            actives: ["tmdb.vote_average", "phim-moi"],
+            disables: ["sapXep", "loaiPhim"],
+          };
+          break;
+        case "find_movies":
+          activeConfig = { actives: [], disables: [] };
+          break;
+        default:
+          activeConfig = { actives: [movieType], disables: ["loaiPhim"] };
       }
+      setActiveItem(activeConfig);
+
       const list = await API.getTypeMovies(movieType, 1);
-      setPagiSetting(list[0].pagination);
-      setListMovies(list);
+      setListMovies(list || []);
+      if (list && list.length) setPagiSetting(list[0].pagination);
       setLoading(false);
     }
-    fetchData();
-  }, [title]);
+    fetchType();
+    setKeyWord({ key: "", page: 1 });
+    setParams((prev) => ({ ...prev, page: 1 }));
+  }, [movieType, setLoading]);
+
+  // filter/search
   useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      const parameter = {
-        moviesType: params.loaiPhim,
-        page: params.page,
-        sortBy: params.sapXep,
-        type: params.theLoai,
-        nation: params.quocGia,
-        year: params.nam,
-      };
-      const list = await API.searchMovies(parameter);
-      if (list && list.length > 0) setPagiSetting(list[0].pagination);
-      setListMovies(list);
-      setLoading(false);
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false;
+      return;
     }
-    fetchData();
-  }, [params]);
-  useEffect(() => {
-    async function fetchData() {
+    async function fetchFiltered() {
       setLoading(true);
-      const list = await API.findMovies(keyWord.key, keyWord.page);
-      if (list && list.length > 0) {
-        setPagiSetting(list[0].pagination);
+      let list = [];
+      if (useWhat === "search") {
+        list = await API.findMovies(keyWord.key, keyWord.page);
+      } else {
+        const parameter = {
+          moviesType: params.loaiPhim,
+          page: params.page,
+          sortBy: params.sapXep,
+          type: params.theLoai,
+          nation: params.quocGia,
+          year: params.nam,
+        };
+        list = await API.searchMovies(parameter);
       }
-      setListMovies(list);
+      setListMovies(list || []);
+      if (list && list.length) setPagiSetting(list[0].pagination);
       setLoading(false);
     }
-    fetchData();
-  }, [keyWord]);
+    fetchFiltered();
+  }, [params, keyWord, useWhat, setLoading]);
+
   return (
     <div style={{ padding: "10px 25px 0 25px" }}>
       <Filter
@@ -90,49 +93,47 @@ function ListMovies({ title }) {
         state={{ params, setParams }}
         what={{ useWhat, setUseWhat }}
       />
-      {movieType == "find_movies" && (
+      {movieType === "find_movies" && (
         <Search
           state={{ keyWord, setKeyWord }}
           what={{ useWhat, setUseWhat }}
         />
       )}
       <br />
-      <div>
-        <div
-          style={{
-            flexGrow: 1,
-            background:
-              "linear-gradient(235deg, rgb(255, 255, 255) 30%, rgb(247, 161, 11) 130%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            borderBottom: "1px solid white",
-          }}
-        >
-          <h3>{title || "Kết quả tìm kiếm"}</h3>
-        </div>
+      <div
+        style={{
+          flexGrow: 1,
+          background:
+            "linear-gradient(235deg, rgb(255,255,255) 30%, rgb(247,161,11) 130%)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          borderBottom: "1px solid white",
+        }}
+      >
+        <h3>{title || "Kết quả tìm kiếm"}</h3>
       </div>
       <div className="container-fluid">
         <div className="row g-1 mt-2">
           {loading
             ? Array(24)
                 .fill(null)
-                .map((_, index) => (
+                .map((_, idx) => (
                   <div
-                    key={index}
+                    key={idx}
+                    className="col-6 col-md-4 col-lg-3"
                     style={{
                       borderRadius: 7,
                       overflow: "hidden",
                       backgroundColor: "transparent",
                     }}
-                    className="col-6 col-md-4 col-lg-3"
                   >
                     <div className="skeleton-card">
                       <Skeleton
                         variant="rectangular"
+                        className="skeleton-image"
                         sx={{ bgcolor: "rgb(73, 73, 73)" }}
                         animation="wave"
                         style={{ margin: 10, borderRadius: 7 }}
-                        className="skeleton-image"
                       />
                       <Skeleton
                         variant="text"
@@ -151,25 +152,22 @@ function ListMovies({ title }) {
                     </div>
                   </div>
                 ))
-            : listMovies.map((item, index) => {
-                return (
-                  <div key={index} className="col-6 col-md-4 col-lg-3">
-                    <Card movie={item}></Card>
-                  </div>
-                );
-              })}
+            : listMovies.map((item, idx) => (
+                <div key={idx} className="col-6 col-md-4 col-lg-3">
+                  <Card movie={item} />
+                </div>
+              ))}
         </div>
       </div>
       <br />
-      <div>
-        <PaginationRounded
-          setting={pagiSetting}
-          state1={{ params, setParams }}
-          what={{ useWhat, setUseWhat }}
-          state2={{ keyWord, setKeyWord }}
-        ></PaginationRounded>
-      </div>
+      <PaginationRounded
+        setting={pagiSetting}
+        state1={{ params, setParams }}
+        what={{ useWhat, setUseWhat }}
+        state2={{ keyWord, setKeyWord }}
+      />
     </div>
   );
 }
+
 export default ListMovies;
