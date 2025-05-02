@@ -84,7 +84,7 @@ function CustomChart() {
                 >◀</button>
 
                 {/* Khung chứa các Card */}
-                <div className="" style={{border: "1px solid #ccc",height : "350px", borderRadius: "10px", padding: "20px", width: "100%"}}>
+                <div className="" style={{ border: "1px solid #ccc", height: "350px", borderRadius: "10px", padding: "20px", width: "100%" }}>
                     <h2>Lead of month</h2>
 
                     <div

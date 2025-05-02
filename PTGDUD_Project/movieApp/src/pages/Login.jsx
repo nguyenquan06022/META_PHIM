@@ -29,7 +29,10 @@ function Login() {
         setError(null);
         const userId = res.data.user?._id; // server trả về user
         if (userId) {
-          navigate(`/user/${userId}`); // chuyển hướng đến trang người dùng
+          navigate(`/user/${userId}`);
+          setTimeout(() => {
+            window.location.reload();
+          }, 0); // chuyển hướng đến trang người dùng
         } else {
           alert("Đăng nhập thành công, nhưng không tìm thấy thông tin user.");
         }

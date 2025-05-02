@@ -3,19 +3,20 @@ import { useState } from 'react';
 import FilmSummary from '../components/FilmSumary';
 import OverviewCard from '../components/OverviewCard';
 import CustomChart from '../components/Chart';
-import HeaderSection from '../components/HeaderSection';
 
 
 function Dashboard() {
+
+
 
     return (
         <div className='containerr px-5'>
 
             {/* <HeaderSection /> */}
-            <h1 className='my-3' style={{color:"white"}}>Overview</h1>
+            <h1 className='my-3' style={{ color: "white" }}>Overview</h1>
             <OverviewCard />
             <CustomChart ></CustomChart>
-            <h2 style={{color: "whitesmoke"}}>Top film</h2>
+            <h2 style={{ color: "whitesmoke" }}>Top film</h2>
             <div className="list-top d-flex flex-column align-items-center">
 
                 <FilmSummary></FilmSummary>
@@ -24,12 +25,6 @@ function Dashboard() {
                 <FilmSummary></FilmSummary>
                 <FilmSummary></FilmSummary>
             </div>
-            
-            
-
-            
-
-
 
         </div>
     );

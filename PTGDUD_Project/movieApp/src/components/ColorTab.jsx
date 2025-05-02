@@ -41,6 +41,9 @@ function ColorTab({ color, data, activeItem }) {
   const [activeButton, setActiveButton] = useState(activeItem);
 
   useEffect(() => {
+    if (location.search.match(/ep=([^&]*)/)) {
+      setActiveButton(location.search.match(/ep=([^&]*)/)[1]);
+    }
     setSlug(location.pathname.split("/")[2]);
   }, [location]);
 

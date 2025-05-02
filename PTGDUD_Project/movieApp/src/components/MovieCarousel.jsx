@@ -2,6 +2,9 @@ import Skeleton from "@mui/material/Skeleton";
 import { LoadingContext } from "../global/LoadingContext";
 import { useState, useEffect, useContext } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   FaPlay,
   FaHeart,
@@ -10,7 +13,8 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaTimes,
-} from "react-icons/fa"; // Importing react-icons
+} from "react-icons/fa";
+import axios from "axios";
 
 const MovieCarousel = ({ movies }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -19,11 +23,11 @@ const MovieCarousel = ({ movies }) => {
   const [opacity, setOpacity] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-  const [showTrailer, setShowTrailer] = useState(false); // Show trailer modal state
+  const [showTrailer, setShowTrailer] = useState(false);
+  const [linkFirstVideo, setLinkFirstVideo] = useState("#");
   const { loading } = useContext(LoadingContext);
 
   const currentMovie = movies[currentIndex];
-
   useEffect(() => {
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -33,6 +37,14 @@ const MovieCarousel = ({ movies }) => {
     window.addEventListener("resize", checkScreenSize);
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
+
+  useEffect(() => {
+    if (currentMovie == null) return;
+    const link = `/watch/${currentMovie.slug}?server=${
+      currentMovie.firstVideo.server_name.split("#")[1]
+    }&ep=${currentMovie.firstVideo.server_data[0].name}`;
+    setLinkFirstVideo(link);
+  }, [currentMovie]);
 
   const changeSlide = (newIndex) => {
     if (isTransitioning) return;
@@ -78,6 +90,59 @@ const MovieCarousel = ({ movies }) => {
     currentMovie?.videoId || getYoutubeId(currentMovie?.trailer_url || "");
 
   const goldColor = "rgb(235, 200, 113)";
+
+  const handleAddLoveFilm = async () => {
+    if (!currentMovie) return;
+
+    const obj = {
+      category:
+        currentMovie.category?.map((cat) => ({
+          id: cat.id,
+          name: cat.name,
+          slug: cat.slug,
+        })) || [],
+      chap: currentMovie.episode_current || "",
+      imdb: currentMovie.imdb?.id || "",
+      tmdb: {
+        type: currentMovie.tmdb?.type || "",
+        id: currentMovie.tmdb?.id || "",
+        season: currentMovie.tmdb?.season || null,
+        vote_average: currentMovie.tmdb?.vote_average || 0,
+        vote_count: currentMovie.tmdb?.vote_count || 0,
+      },
+      img: currentMovie.thumb_url || "",
+      lang: currentMovie.lang || "",
+      name: currentMovie.name || "",
+      originName: currentMovie.origin_name || "",
+      poster_url: currentMovie.poster_url || "",
+      quality: currentMovie.quality || "",
+      slug: currentMovie.slug || "",
+      time: currentMovie.time || "",
+      year: currentMovie.year || new Date().getFullYear(),
+    };
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/handleLoveFilm",
+        obj,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res);
+      if (res.data.message == "Đã bỏ thích") {
+        toast.info("Đã bỏ thích");
+      } else if (
+        res.data.message == "Thêm vào danh sách yêu thích thành công"
+      ) {
+        toast.success("Đã thêm phim vào danh sách yêu thích");
+      }
+    } catch (error) {
+      console.log("Lỗi khi thêm phim:", error);
+      if (error.response.data.message == "Chưa đăng nhập")
+        toast.error("Vui lòng đăng nhập để thực hiện hành động");
+    }
+  };
 
   return (
     <div
@@ -167,31 +232,41 @@ const MovieCarousel = ({ movies }) => {
                 <p style={{ color: goldColor }}>{currentMovie?.origin_name}</p>
 
                 <div className="d-flex gap-2 mb-3">
-                  <button
-                    className="btn d-flex align-items-center gap-1"
-                    style={{
-                      backgroundColor: goldColor,
-                      color: "#000",
-                      fontWeight: "500",
-                    }}
-                  >
-                    <FaPlay /> Xem ngay
-                  </button>
+                  <Link to={linkFirstVideo} style={{ textDecoration: "none" }}>
+                    <button
+                      className="btn btn-warning d-flex align-items-center gap-1"
+                      style={{
+                        backgroundColor: goldColor,
+                        color: "#000",
+                        fontWeight: "500",
+                      }}
+                    >
+                      <FaPlay /> Xem ngay
+                    </button>
+                  </Link>
 
                   <button
                     className="btn btn-outline-light"
-                    onClick={toggleLike}
+                    onClick={() => {
+                      toggleLike();
+                      handleAddLoveFilm();
+                    }}
                     style={{ borderWidth: "1px" }}
                   >
                     {isLiked ? <FaHeart color="red" /> : <FaHeart />}
                   </button>
 
-                  <button
-                    className="btn btn-outline-light"
-                    style={{ borderWidth: "1px" }}
+                  <Link
+                    to={`/infor/${currentMovie?.slug}`}
+                    style={{ textDecoration: "none" }}
                   >
-                    <FaInfoCircle />
-                  </button>
+                    <button
+                      className="btn btn-outline-light"
+                      style={{ borderWidth: "1px" }}
+                    >
+                      <FaInfoCircle />
+                    </button>
+                  </Link>
                 </div>
 
                 {/* Only show "Xem trailer" button if isSmallScreen (màn hình nhỏ) */}

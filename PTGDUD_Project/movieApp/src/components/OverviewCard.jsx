@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react';
-// import axios from 'axios';
-// import a from '../assets/Lab_05/Button 1509.png';
-// import b from '../assets/Lab_05/Button 1529.png';
-// import c from '../assets/Lab_05/Button 1530.png';
-
+import axios from 'axios';
 import { FaMedium, FaUser } from 'react-icons/fa6'
 import { BiCategory } from 'react-icons/bi'
-
 
 function OverviewCard() {
     const [overview, setOverview] = useState(null);
@@ -17,6 +12,7 @@ function OverviewCard() {
             <div className="row">
                 <div className="col-md-3 mb-3" >
                     <div className="card shadow-sm">
+
                         <div className="card-body position-relative" style={{ backgroundColor: '#fff0f5', borderRadius: '10px' }}>
 
                             {/* Icon ở góc trên bên phải */}
@@ -28,6 +24,7 @@ function OverviewCard() {
                             </div>
 
                             <h5 className="card-title text-muted">Thời gian xem trung bình</h5>
+
                             <p className="card-text fs-3 fw-bold">${overview?.turnover.toLocaleString() || ""}</p>
                             <p className="text-success small">+ {overview?.turnoverChange || ""}% period change</p>
                         </div>
@@ -35,6 +32,8 @@ function OverviewCard() {
                 </div>
                 <div className="col-md-3 mb-3">
                     <div className="card shadow-sm">
+
+
                         <div
                             className="card-body position-relative"
                             style={{ backgroundColor: "#eff6ff", borderRadius: "10px" }}
@@ -89,22 +88,7 @@ function OverviewCard() {
                         </div>
                     </div>
                 </div>
-
-                {/* <div className="col-md-3 mb-3">
-                    <div className="card shadow-sm">
-                        <div className="card-body position-relative" style={{ backgroundColor: '#eff6ff', borderRadius: '10px' }}>
-                            <img className=" position-absolute top-0 end-0 m-3 text-primary"
-                                src=" https://img.icons8.com/ios-filled/50/000000/new-customer.png"
-                                style={{ width: "32px", height: '32px' }}
-                            ></img>
-                            <h5 className="card-title text-muted">Trung bình số người xem</h5>
-                            <p className="card-text fs-3 fw-bold">{overview?.newCustomer || "0"}</p>
-                            <p className="text-success small">+ {overview?.newCustomerChange || ""}% period change</p>
-                        </div>
-                    </div>
-                </div> */}
-
-
+               
             </div>
         </div>
     );

@@ -4,7 +4,7 @@ import avatar from "/avatar/avtD.png"; // Thay bằng hình của bạn
 
 export default function FilmSummary() {
     return (
-        <Card className="p-1 d-flex align-items-center  shadow-sm rounded-4 mb-2 mt-2">
+        <Card className="p-1 d-flex align-items-center shadow-sm rounded-4 mb-2 mt-2">
             <Row className="w-100 align-items-center text-center text-md-start">
                 <Col xs={12} md={2} className="d-flex justify-content-center">
                     <Image

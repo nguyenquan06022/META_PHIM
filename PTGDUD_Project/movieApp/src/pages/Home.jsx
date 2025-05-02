@@ -18,7 +18,7 @@ function Home() {
 
 
       setLoading(true);
-      const videosDemo = await API.getVideoForHomePage(3);
+      const videosDemo = await API.getVideoForHomePage(5);
       const suggestMovies = await API.getTypeMovies("top_movies", 1);
       const seriesMovies = await API.getTypeMovies("phim-bo", 1);
       const singleMovies = await API.getTypeMovies("phim-le", 1);
@@ -32,14 +32,10 @@ function Home() {
     }
     fetchData();
   }, []);
-
-  console.log(listVideosDemo);
-
   return (
     <div>
       <div>
         <MovieCarousel movies={listVideosDemo} />
-        {/* <VideoDemo videoList={listVideosDemo} /> */}
       </div>
       <br />
       <div style={{ padding: "0px 25px" }}>
