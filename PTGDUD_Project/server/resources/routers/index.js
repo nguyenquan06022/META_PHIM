@@ -2,6 +2,8 @@ const userInforControllers = require('../../app/controllers/userInforControllers
 
 const mongoose = require('mongoose')
 const model = require('../../app/models/UserDataModel')
+const modeUser = require('../../app/models/UserModel')
+const UserModel = require('../../app/models/UserModel')
 function router(app) {
     app.post('/sign-up', userInforControllers.signUp)
     app.post('/update-avt', userInforControllers.updateAvt)
@@ -29,6 +31,20 @@ function router(app) {
             console.log(data[0])
             res.status(200).json(data[0]);
         }
+    })
+
+    app.get('/getSoLuongTaiKhoan', async (req, res, next) => {
+        const now = new Date();
+        const users = await UserModel.find({
+            createdAt: {
+                $gte: new Date(now.getFullYear(), now.getMonth(), 1),               // Đầu tháng
+                $lt: new Date(now.getFullYear(), now.getMonth() + 1, 1),            // Đầu tháng sau
+            }
+        });
+        const count = users.length; // Đếm số lượng tài khoản trong tháng này
+        console.log(count)
+        res.status(200).json({ success: true, count: count });
+
     })
 }
 module.exports = router

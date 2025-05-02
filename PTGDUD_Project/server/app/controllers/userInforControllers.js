@@ -37,6 +37,7 @@ class userInforControllers {
 
                 newUser.save()
                     .then(savedUser => {
+                        console.log(savedUser)
                         const newUserData = new UserData({
                             accout_ID: savedUser._id,
                             watchContinues: [],

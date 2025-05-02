@@ -112,7 +112,8 @@ const UserData = new Schema({
     loveFilms: [loveFilm],
     watchLaters: [watchLater]
 }, {
-    collection: 'UserDatas'
+    collection: 'UserDatas',
+    timestamps: true
 });
 
 module.exports = mongoose.model('UserDatas', UserData)
