@@ -5,7 +5,6 @@ function Select({ id, name, title, data, activeItem, state, what }) {
   const [disable, setDisable] = useState(false);
   const { setParams } = state;
   const { setUseWhat } = what;
-  console.log("end");
   useEffect(() => {
     if (activeItem && data) {
       if (Array.isArray(activeItem.actives)) {

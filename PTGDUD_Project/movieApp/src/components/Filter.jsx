@@ -19,7 +19,6 @@ import { useLocation } from "react-router-dom";
 // import "../styles/MovieFilter.css"
 
 function MovieFilter({ activeItem, state, what }) {
-  console.log("end");
   const location = useLocation();
   const [categories, setCategories] = useState([]);
   const [types, setTypes] = useState([]);
