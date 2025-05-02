@@ -15,6 +15,7 @@ import { LoginProvider } from "./global/LoginProvider";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import User from "./pages/User";
 import OAuthSuccess from "./pages/OAuthSuccess";
+import Dashboard from "./pages/DashBoard";
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
               <Route path="/watch/:slug" element={<Watch />}></Route>
               <Route path="/user/:id" element={<User />}></Route>
               <Route path="/oauth-success" element={<OAuthSuccess />} />
+              <Route path="/dashboard" element={<Dashboard />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
