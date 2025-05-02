@@ -1,11 +1,16 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import ListEp from "../components/ListEp";
 import FbComment from "../components/FbComment";
 import { useLocation } from "react-router-dom";
 import LoadingOverlay from "../components/LoadingOverlay";
 import VideoPlayerMain from "../components/VideoPlayerMain";
+import { LoginContext } from "../global/LoginContext";
+import { useNavigate } from "react-router-dom";
+import "../assets/css/watch.css";
 import API from "../api/index";
 function Watch() {
+  const { user, updateCurUser } = useContext(LoginContext);
+  const navigate = useNavigate();
   const useQuery = () => {
     return new URLSearchParams(useLocation().search);
   };
@@ -31,17 +36,22 @@ function Watch() {
   };
 
   const videoRef = useRef(null);
+  const isFirstLoad = useRef(true);
   const [movie, setMovie] = useState();
   const [slug, setSlug] = useState();
   const [ep, setEp] = useState();
   const [server, setSever] = useState();
   const [linkVideo, setLinkVideo] = useState();
+  const [showModal, setShowModal] = useState(false);
+  const [curTime, setCurTime] = useState();
+  const [watchContinue, setWatchContinue] = useState();
   const query = useQuery();
   const location = useLocation();
 
   useEffect(() => {
     async function fetchData() {
       try {
+        updateCurUser();
         const data = await API.getInforMovies(location.pathname.split("/")[2]);
         setEp(query.get("ep"));
         setSever(query.get("server"));
@@ -56,21 +66,98 @@ function Watch() {
     }
     fetchData();
   }, [location]);
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (videoRef.current) {
-        const current = videoRef.current.currentTime;
-        const duration = videoRef.current.duration;
-        console.log(`Thời lượng đã xem: ${current.toFixed(2)}s`);
-        console.log(`Tổng thời lượng video: ${duration.toFixed(2)}s`);
-      }
-    };
+  // useEffect(() => {
+  //   updateCurUser();
+  //   if (user && slug) {
+  //     const filtered = user._doc.watchContinues.filter(
+  //       (item) => item.slug == slug
+  //     );
+  //     if (filtered.length > 0 && filtered[0].timeContinue > 0) {
+  //       setCurTime(filtered[0].timeContinue);
+  //       setWatchContinue({
+  //         name: filtered[0].name,
+  //         ep: filtered[0].nameEp,
+  //         timeContinue: filtered[0].timeContinue,
+  //         linkEp: filtered[0].linkEp.replace(/^.*(?=\/watch)/, ""),
+  //       });
+  //     }
+  //   }
+  // }, [slug, location.search]);
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
+  useEffect(() => {
+    if (user && slug) {
+      const filtered = user._doc.watchContinues.filter(
+        (item) => item.slug == slug
+      );
+      if (filtered.length > 0 && filtered[0].timeContinue > 0) {
+        const item = filtered[0];
+        setWatchContinue({
+          name: item.name,
+          ep: item.nameEp,
+          timeContinue: item.timeContinue,
+          linkEp: item.linkEp.replace(/^.*(?=\/watch)/, ""),
+        });
+        setCurTime(item.timeContinue); // bạn có thể gộp chung nếu cần
+      } else {
+        setWatchContinue(null); // reset nếu không có dữ liệu
+      }
+    }
+  }, [user, slug, location]); // bỏ location.search nếu không cần reload lại theo URL
+
+  // useEffect(() => {
+  //   updateCurUser();
+  //   if (watchContinue) {
+  //     const currentPath = window.location.pathname + window.location.search;
+  //     if (currentPath === watchContinue.linkEp) {
+  //       setShowModal(false);
+  //       setTimeout(() => {
+  //         if (videoRef.current) {
+  //           videoRef.current.currentTime = watchContinue.timeContinue;
+  //         }
+  //       }, 500);
+  //     } else {
+  //       setShowModal(true);
+  //     }
+  //   }
+  // }, [watchContinue]);
+
+  useEffect(() => {
+    if (watchContinue) {
+      const currentPath = window.location.pathname + window.location.search;
+      if (isFirstLoad.current) {
+        if (currentPath === watchContinue.linkEp) {
+          setShowModal(false);
+          setTimeout(() => {
+            if (videoRef.current) {
+              videoRef.current.currentTime = watchContinue.timeContinue;
+            }
+          }, 500);
+        } else {
+          setShowModal(true);
+        }
+        isFirstLoad.current = false; // đánh dấu không còn là lần đầu
+      } else {
+        // Nếu không phải lần đầu, không show modal
+        setShowModal(false);
+      }
+    }
+  }, [watchContinue]);
+
+  useEffect(() => {
+    if (watchContinue) {
+      const currentPath = window.location.pathname + window.location.search;
+      if (currentPath === watchContinue.linkEp) {
+        setShowModal(false);
+        setTimeout(() => {
+          if (videoRef.current) {
+            videoRef.current.currentTime = watchContinue.timeContinue;
+          }
+        }, 500);
+      } else {
+        setShowModal(true);
+      }
+    }
+  }, [slug]);
 
   if (!linkVideo) {
     return <LoadingOverlay isLoading={linkVideo == null}></LoadingOverlay>;
@@ -82,13 +169,17 @@ function Watch() {
           linkVideo={linkVideo}
           ref={videoRef}
           movie={movie}
+          linkEp={window.location.href}
         ></VideoPlayerMain>
       </div>
       <div style={{ padding: "0px 25px" }}>
+        <br />
+        <h3 style={{ color: "rgb(235, 200, 113)" }}>Tập {ep}</h3>
         <div
           style={{
             width: "100%",
             display: "flex",
+            alignItems: "center",
           }}
         >
           <button className="btn btn-secondary btn-hover">
@@ -195,6 +286,42 @@ function Watch() {
           </div>
         </div>
       </div>
+      {showModal && (
+        <div className="custom-modal-backdrop">
+          <div className="custom-modal">
+            <h4 style={{ color: "white" }}>
+              Hệ thống đã ghi nhận bạn đang xem phim{" "}
+              <span style={{ color: "rgb(235, 200, 113)" }}>
+                {watchContinue.name}
+              </span>
+              , tập{" "}
+              <span style={{ color: "rgb(235, 200, 113)" }}>
+                {watchContinue.ep}
+              </span>
+              . Bạn có muốn xem tiếp không?
+            </h4>
+            <div className="modal-buttons">
+              <button
+                className="btn-confirm"
+                onClick={() => {
+                  setShowModal(false);
+                  navigate(watchContinue.linkEp, {
+                    state: { curTime: watchContinue.timeContinue },
+                  });
+                }}
+              >
+                Xem tiếp
+              </button>
+              <button
+                className="btn-cancel"
+                onClick={() => setShowModal(false)}
+              >
+                Không
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

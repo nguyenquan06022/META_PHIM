@@ -1,5 +1,6 @@
 const UserModel = require("../models/UserModel");
 const UserData = require("../models/UserDataModel");
+const UserDataModel = require("../models/UserDataModel");
 
 class userInforControllers {
   showUserInfor(req, res, next) {
@@ -270,9 +271,98 @@ class userInforControllers {
       });
   }
 
+  addWatchContinue = (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user._id || req.user.id;
+    const newData = req.body;
+
+    UserData.findOne({ accout_ID: userId })
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        const index = user.watchContinues.findIndex(
+          (item) => item.slug === newData.slug
+        );
+
+        if (index !== -1) {
+          user.watchContinues[index] = Object.assign(
+            {},
+            user.watchContinues[index]._doc,
+            newData
+          );
+        } else {
+          user.watchContinues.unshift(newData);
+        }
+
+        if (user.watchContinues.length > 20) {
+          user.watchContinues = user.watchContinues.slice(0, 20);
+        }
+
+        return user.save();
+      })
+      .then((savedUser) => {
+        res.status(200).json({
+          message: "WatchContinue updated",
+          data: savedUser.watchContinues,
+        });
+      })
+      .catch((error) => {
+        res.status(500).json({ message: "Server error", error });
+      });
+  };
+
+  deleteWatchContinue = (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user._id || req.user.id;
+    const slugToDelete = req.body.slug;
+
+    UserData.findOne({ accout_ID: userId })
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        const prevLength = user.watchContinues.length;
+        user.watchContinues = user.watchContinues.filter(
+          (item) => item.slug !== slugToDelete
+        );
+
+        if (user.watchContinues.length === prevLength) {
+          return res
+            .status(404)
+            .json({ message: "Slug not found in watchContinues" });
+        }
+
+        return user.save();
+      })
+      .then((savedUser) => {
+        res.status(200).json({
+          message: "WatchContinue deleted",
+          data: savedUser.watchContinues,
+        });
+      })
+      .catch((error) => {
+        res.status(500).json({ message: "Server error", error });
+      });
+  };
+
   getCurrentUser(req, res) {
     if (req.isAuthenticated()) {
-      return res.json({ user: req.user });
+      UserDataModel.findOne({ accout_ID: req.user._id })
+        .then((data) => {
+          return res.json({ ...req.user, ...data });
+        })
+        .catch((err) =>
+          res.status(400).json({ message: "Không tìm thấy UserData" })
+        );
     } else {
       return res.status(401).json({ message: "Chưa đăng nhập" });
     }

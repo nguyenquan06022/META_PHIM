@@ -4,13 +4,11 @@ import axios from "axios";
 
 export const LoginProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    // Gọi API để lấy user hiện tại từ server
+  const updateCurUser = () => {
     axios
       .get("http://localhost:3000/getCurrentUser", { withCredentials: true })
       .then((res) => {
-        setUser(res.data.user);
+        setUser(res.data);
       })
       .catch((err) => {
         console.log(
@@ -19,10 +17,13 @@ export const LoginProvider = ({ children }) => {
         );
         setUser(null); // Không có user
       });
+  };
+  useEffect(() => {
+    updateCurUser();
   }, []);
 
   return (
-    <LoginContext.Provider value={{ user, setUser }}>
+    <LoginContext.Provider value={{ user, setUser, updateCurUser }}>
       {children}
     </LoginContext.Provider>
   );

@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
 import Hls from "hls.js";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
+import { LoginContext } from "../global/LoginContext";
 import {
   Play,
   Pause,
@@ -14,10 +16,12 @@ import {
 } from "lucide-react";
 
 const VideoPlayerMain = React.forwardRef(function VideoPlayerMain(
-  { linkVideo, movie },
+  { linkVideo, movie, linkEp },
   videoRef
 ) {
+  const { user, updateCurUser } = useContext(LoginContext);
   const location = useLocation();
+  const { curTime } = location.state || {};
   const volumeBarRef = useRef(null);
   const containerRef = useRef(null);
   const progressRef = useRef(null);
@@ -27,6 +31,8 @@ const VideoPlayerMain = React.forwardRef(function VideoPlayerMain(
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [controlsVisible, setControlsVisible] = useState(false);
+  const [playButtonHover, setPlayButtonHover] = useState(false);
   const hlsUrl = linkVideo;
 
   // CSS Styles
@@ -143,14 +149,6 @@ const VideoPlayerMain = React.forwardRef(function VideoPlayerMain(
       padding: 0,
     },
 
-    // volumeSlider: {
-    //   width: "6rem",
-    //   height: "0.25rem",
-    //   backgroundColor: "rgba(255,255,255,0.3)",
-    //   borderRadius: "9999px",
-    //   appearance: "none",
-    //   cursor: "pointer",
-    // },
     timeDisplay: {
       color: "white",
       fontSize: "0.875rem",
@@ -224,13 +222,14 @@ const VideoPlayerMain = React.forwardRef(function VideoPlayerMain(
 
       const handlePause = () => {
         setIsPlaying(false);
-        const current = formatTime(video.currentTime);
-        const duration = formatTime(video.duration);
-        console.log(`⏱ Đang xem: ${current} / ⏳ Tổng thời lượng: ${duration}`);
       };
 
       const handlePlay = () => {
         setIsPlaying(true);
+        if (curTime) {
+          video.currentTime = curTime;
+        }
+        //code here
       };
 
       const handleEnded = () => {
@@ -331,16 +330,42 @@ const VideoPlayerMain = React.forwardRef(function VideoPlayerMain(
 
   useEffect(() => {
     const video = videoRef.current;
-
     return () => {
-      const current = formatTime(video.currentTime);
-      const duration = formatTime(video.duration);
-      console.log(
-        `⏱ Đang xem trước khi chuyển trang: ${current} / ⏳ Tổng thời lượng: ${duration}`
-      );
-      console.log(movie);
+      const timeContinue = video?.currentTime || 0;
+      const timeTotal = video?.duration || 0;
+      const percentRemain =
+        timeTotal > 0 ? (timeContinue / timeTotal) * 100 : 0;
+      const objWatchContinue = {
+        slug: movie.slug,
+        image: movie.thumb_url || movie.poster_url,
+        name: movie.name,
+        nameEp: location.search.match(/ep=([^&]*)/)[1],
+        linkEp: linkEp,
+        timeContinue: Math.floor(timeContinue),
+        timeTotal: Math.floor(timeTotal),
+        percentRemain: Math.round(percentRemain),
+        category: movie.category,
+        lang: movie.lang,
+        originName: movie.origin_name,
+        poster_url: movie.poster_url,
+        quality: movie.quality,
+        year: movie.year,
+        time: movie.time,
+      };
+      if (timeContinue != 0) {
+        axios
+          .post("http://localhost:3000/addWatchContinue", objWatchContinue, {
+            withCredentials: true,
+          })
+          .then((res) => {
+            console.log("✅ Đã lưu dữ liệu xem tiếp:", res.data);
+          })
+          .catch((err) => {
+            console.error("❌ Lỗi khi lưu dữ liệu xem tiếp:", err);
+          });
+      }
     };
-  }, [location]);
+  }, [location.search]);
 
   const togglePlay = () => {
     const video = videoRef.current;
@@ -417,9 +442,6 @@ const VideoPlayerMain = React.forwardRef(function VideoPlayerMain(
       duration
     );
   };
-
-  const [controlsVisible, setControlsVisible] = useState(false);
-  const [playButtonHover, setPlayButtonHover] = useState(false);
 
   return (
     <div
