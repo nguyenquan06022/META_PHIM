@@ -33,6 +33,7 @@ function auth(app) {
               _id: data._id,
               gg_id: data.gg_id,
               avt: data.avt,
+              role: data.role,
             };
             return done(null, user);
           }
@@ -148,6 +149,7 @@ function auth(app) {
           _id: data._id,
           gg_id: data.gg_id,
           avt: data.avt,
+          role: data.role,
         };
         return done(null, user);
       })

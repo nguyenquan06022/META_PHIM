@@ -12,7 +12,7 @@ class userInforControllers {
               .status(400)
               .json({ success: false, message: "Đăng nhập thất bại" });
           else {
-            UserData.findOne({ accout_ID: data._id })
+            UserDataModel.findOne({ accout_ID: data._id })
               .then((result) => {
                 if (!result)
                   res.status(500).json({
@@ -24,12 +24,12 @@ class userInforControllers {
                     username: data.username,
                     password: data.password,
                     avt: data.avt,
+                    role: data.role,
                     accout_ID: result.accout_ID,
                     watchContinues: result.watchContinues,
                     loveFilms: result.loveFilms,
                     watchLaters: result.watchLaters,
                   };
-                  console.log(obj);
                   res.status(200).json(obj);
                 }
               })
@@ -83,6 +83,7 @@ class userInforControllers {
     if (req.isAuthenticated()) {
       const id = req.user._id;
       const newObj = req.body;
+      newObj.role = req.user.role;
 
       UserModel.findOneAndUpdate({ _id: id }, newObj, {
         new: true,
@@ -122,70 +123,6 @@ class userInforControllers {
     }
   };
 
-  // updateComicHistory(req,res,next) {
-  //     let obj = req.body
-  //     if(req.isAuthenticated()) {
-  //     let id = req.user._id
-  //         UserData.findOne({accout_ID : id})
-  //         .then(data => {
-  //             if(!data) {
-  //                 res.end()
-  //             }else {
-  //                 let historyComicIndex = data.historyComic.findIndex(item => item.slug === obj.slug)
-  //                 if(historyComicIndex == -1) {
-  //                     data.historyComic.unshift({
-  //                         img : obj.img,
-  //                         slug : obj.slug,
-  //                         comicName: obj.name,
-  //                         chapName: obj.chapName,
-  //                         linkChap: `/comic?slug=${obj.slug}&id=${obj.id}`,
-  //                         readAt: obj.readAt
-  //                     })
-  //                     data.save()
-  //                 }else {
-  //                     data.historyComic[historyComicIndex] = {
-  //                         img : obj.img,
-  //                         slug : obj.slug,
-  //                         comicName: obj.name,
-  //                         chapName: obj.chapName,
-  //                         linkChap: `/comic?slug=${obj.slug}&id=${obj.id}`,
-  //                         readAt: obj.readAt
-  //                     }
-  //                     data.save()
-  //                 }
-  //                 res.end()
-  //             }
-  //         }).catch(err => {
-  //             next(err)
-  //         })
-  //     }
-  // }
-
-  // getHistoryComic(req,res,next) {
-  //     if(req.isAuthenticated()) {
-  //         let id = req.user._id
-  //         UserData.findOne({accout_ID : id})
-  //         .then(data => {
-  //             res.json(data.historyComic)
-  //         }).catch(err => next(err))
-  //     }
-  //     else {
-  //         res.json([])
-  //     }
-  // }
-
-  // deleteHistoryComic(req,res,next) {
-  //     if(req.isAuthenticated()) {
-  //         let id = req.user._id
-  //         let slug = req.query.slug
-  //         UserData.updateOne(
-  //             { accout_ID: id, "historyComic.slug": slug },
-  //             { $set: { "historyComic.$.isDelete": true } }
-  //         ).then(() => res.end())
-  //         .catch(next)
-  //     }
-  // }
-
   handleLoveFilm(req, res, next) {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Chưa đăng nhập" });
@@ -194,7 +131,7 @@ class userInforControllers {
     const filmData = req.body;
     const userId = req.user.id || req.user._id;
 
-    UserData.findOne({ accout_ID: userId })
+    UserDataModel.findOne({ accout_ID: userId })
       .then((user) => {
         if (!user) {
           return res.status(404).json({ message: "Không tìm thấy người dùng" });
@@ -248,7 +185,7 @@ class userInforControllers {
     const filmData = req.body;
     const userId = req.user.id || req.user._id;
 
-    UserData.findOne({ accout_ID: userId })
+    UserDataModel.findOne({ accout_ID: userId })
       .then((user) => {
         if (!user) {
           return res.status(404).json({ message: "Không tìm thấy người dùng" });
@@ -302,7 +239,7 @@ class userInforControllers {
     const userId = req.user._id || req.user.id;
     const newData = req.body;
 
-    UserData.findOne({ accout_ID: userId })
+    UserDataModel.findOne({ accout_ID: userId })
       .then((user) => {
         if (!user) {
           return res.status(404).json({ message: "User not found" });
@@ -347,7 +284,7 @@ class userInforControllers {
     const userId = req.user._id || req.user.id;
     const slugToDelete = req.body.slug;
 
-    UserData.findOne({ accout_ID: userId })
+    UserDataModel.findOne({ accout_ID: userId })
       .then((user) => {
         if (!user) {
           return res.status(404).json({ message: "User not found" });
@@ -391,58 +328,208 @@ class userInforControllers {
     }
   }
 
-  // addFollow(req,res,next) {
-  //     if(req.isAuthenticated()) {
-  //         let slug = req.query.slug
-  //         let id = req.user._id
-  //             UserData.findOne({accout_ID : id})
-  //             .then(async data => {
-  //                 if(!data) {
-  //                     res.end()
-  //                 }else {
-  //                     let obj = await fetch(`https://otruyenapi.com/v1/api/truyen-tranh/${slug}`)
-  //                     .then(response => {
-  //                         return response.json()
-  //                     }).then(data => {
-  //                         let name = data.data.seoOnPage.seoSchema.name
-  //                         let img = data.data.seoOnPage.seoSchema.image
-  //                         let linkInfor = `/infor?slug=${slug}`
-  //                         let lastChap = data.data.item.chapters[0].server_data.pop().chapter_name
-  //                         return {
-  //                             slug,name,img,linkInfor,lastChap
-  //                         }
-  //                     }).catch(err => console.log(err))
-  //                         data.followComic.push({
-  //                             slug : slug,
-  //                             comicName : obj.name,
-  //                             img : obj.img,
-  //                             linkInfor : obj.linkInfor,
-  //                             lastChap : obj.lastChap
-  //                         })
-  //                     data.save()
-  //                     res.redirect(`/infor?slug=${slug}`)
-  //                 }
-  //             }).catch(err => {
-  //                 next(err)
-  //             })
-  //         }
-  // }
+  getTheLoaiYeuThich = async (req, res, next) => {
+    const data = await UserDataModel.aggregate([
+      { $unwind: "$loveFilms" }, // bóc từng phần tử loveFilms
+      { $unwind: "$loveFilms.category" }, // bóc từng category trong mỗi loveFilm
+      {
+        $group: {
+          _id: "$loveFilms.category.name", // group theo tên thể loại
+          count: { $sum: 1 }, // đếm số lần thể loại xuất hiện
+        },
+      },
+      { $sort: { count: -1 } }, // sắp xếp giảm dần theo số lượng
+    ]);
 
-  // deleteFollow(req,res,next) {
-  //     if(req.isAuthenticated()) {
-  //         let slug = req.query.slug
-  //         let id = req.user._id
-  //         UserData.updateOne(
-  //             {accout_ID : id},
-  //             {
-  //                 $pull : {followComic : {'slug' : slug}}
-  //             }
-  //         ).then(() => {
-  //             res.redirect(`/infor?slug=${slug}`)
-  //         })
-  //         .catch(err => next(err))
-  //     }
-  // }
+    if (!data)
+      res
+        .status(500)
+        .json({ success: false, message: "Không tìm thấy tài khoản" });
+    else {
+      console.log("day la the loai  duoc yeu thic nhat", data[0]);
+      res.status(200).json(data[0]);
+    }
+  };
+
+  getSoLuongTaiKhoan = async (req, res, next) => {
+    const now = new Date();
+    const users = await UserModel.find({
+      createdAt: {
+        $gte: new Date(now.getFullYear(), now.getMonth(), 1), // Đầu tháng
+        $lt: new Date(now.getFullYear(), now.getMonth() + 1, 1), // Đầu tháng sau
+      },
+    });
+    const count = users.length; // Đếm số lượng tài khoản trong tháng này
+    console.log("day la so luong tai khoan ", count);
+
+    res.status(200).json({ success: true, count: count });
+  };
+
+  getThoiGianTrungBinh = async (req, res, next) => {
+    const result = await UserDataModel.aggregate([
+      {
+        $unwind: "$watchContinues",
+      },
+      {
+        $match: {
+          "watchContinues.timeContinue": { $gt: 0 },
+          // Thời gian nằm trong tháng hiện tại
+          "watchContinues.createdAt": {
+            $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            $lt: new Date(
+              new Date().getFullYear(),
+              new Date().getMonth() + 1,
+              1
+            ),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalTime: { $sum: "$watchContinues.timeContinue" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          averageTime: { $divide: ["$totalTime", "$count"] },
+        },
+      },
+    ]);
+
+    console.log("day la thoi gian trung binh", result);
+
+    return res.status(200).json({
+      success: true,
+      averageTime: result.length > 0 ? result[0].averageTime : 0, // Nếu không có kết quả thì trả về 0
+    });
+  };
+
+  getSoLuotXem = async (req, res, next) => {
+    const soluong = await UserDataModel.aggregate([
+      {
+        $unwind: "$watchContinues",
+      },
+      {
+        $match: {
+          "watchContinues.createdAt": {
+            $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            $lt: new Date(
+              new Date().getFullYear(),
+              new Date().getMonth() + 1,
+              1
+            ),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+        },
+      },
+    ]);
+
+    console.log("day la so luot xem", soluong[0].total);
+    return res.status(200).json({
+      success: true,
+      total: soluong[0].total, // Nếu không có kết quả thì trả về 0
+    });
+  };
+
+  getSoLuotXemNgay = async (req, res, next) => {
+    const nam = new Date().getFullYear();
+    const thang = new Date().getMonth() + 1; // Tháng hiện tại (0-11) => (1-12)
+
+    var soNgay = getLastDayOfMonth(nam, thang); // Thay đổi tháng và năm ở đây
+    var soNgayThangTruoc = getLastDayOfMonth(nam, thang - 1); // Thay đổi tháng và năm ở đây
+
+    console.log("day la so luot xem trong thang nay", thang);
+    console.log("day la so luot xem trong thang nay", nam);
+
+    var arrCurrent = new Array(soNgay).fill(0); // Tạo mảng với số ngày của tháng hiện tại
+    var arrPre = new Array(soNgayThangTruoc).fill(0); // Tạo mảng với số ngày của tháng trước
+
+    for (let i = 1; i <= soNgay; i++) {
+      var date = new Date(nam, thang - 1, i + 1); // Tạo ngày từ 1 đến số ngày của tháng hiện tại
+      // console.log('day la so luot xem trong thang nsdfsdfsdfsdfsday', date)
+      var rs = await UserDataModel.aggregate([
+        {
+          $unwind: "$watchContinues",
+        },
+        {
+          $match: {
+            $expr: {
+              $eq: [
+                {
+                  $dateToString: {
+                    format: "%Y-%m-%d",
+                    date: "$watchContinues.createdAt",
+                  },
+                },
+                date.toISOString().split("T")[0], // Chuyển đổi ngày thành chuỗi định dạng YYYY-MM-DD
+              ],
+            },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: 1 },
+          },
+        },
+      ]);
+
+      arrCurrent[i - 1] = rs.length > 0 ? rs[0].total : 0; // Nếu không có kết quả thì trả về 0
+    }
+
+    for (let i = 1; i <= soNgay; i++) {
+      console.log("day la so luot xem trong thang nay", thang - 2);
+      var date2 = new Date(nam, thang - 2, i + 1); // Tạo ngày từ 1 đến số ngày của tháng hiện tại
+      console.log("day la date 2", date2);
+      var rs = await UserDataModel.aggregate([
+        {
+          $unwind: "$watchContinues",
+        },
+        {
+          $match: {
+            $expr: {
+              $eq: [
+                {
+                  $dateToString: {
+                    format: "%Y-%m-%d",
+                    date: "$watchContinues.createdAt",
+                  },
+                },
+                date2.toISOString().split("T")[0], // Chuyển đổi ngày thành chuỗi định dạng YYYY-MM-DD
+              ],
+            },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: 1 },
+          },
+        },
+      ]);
+
+      arrPre[i - 1] = rs.length > 0 ? rs[0].total : 0; // Nếu không có kết quả thì trả về 0
+    }
+
+    return res.status(200).json({
+      success: true,
+      currentMonth: arrCurrent, // Nếu không có kết quả thì trả về 0
+      lastMonth: arrPre, // Nếu không có kết quả thì trả về 0
+    });
+  };
+}
+
+function getLastDayOfMonth(year, month) {
+  const date = new Date(year, month, 0);
+  return date.getDate();
 }
 
 module.exports = new userInforControllers();

@@ -24,8 +24,8 @@ function Card({ movie }) {
           name: cat.name,
           slug: cat.slug,
         })) || [],
-      chap: movie.episode_current || "",
-      imdb: movie.imdb?.id || "",
+      chap: movie.chap || "",
+      imdb: movie.imdb || "",
       tmdb: {
         type: movie.tmdb?.type || "",
         id: movie.tmdb?.id || "",
@@ -33,11 +33,12 @@ function Card({ movie }) {
         vote_average: movie.tmdb?.vote_average || 0,
         vote_count: movie.tmdb?.vote_count || 0,
       },
-      img: movie.thumb_url || "",
+      img: "https://img.ophim.live/uploads/movies/" + movie.img || "",
       lang: movie.lang || "",
       name: movie.name || "",
-      originName: movie.origin_name || "",
-      poster_url: movie.poster_url || "",
+      originName: movie.originName || "",
+      poster_url:
+        "https://img.ophim.live/uploads/movies/" + movie.poster_url || "",
       quality: movie.quality || "",
       slug: movie.slug || "",
       time: movie.time || "",
@@ -146,8 +147,8 @@ function Card({ movie }) {
               <button
                 className="btn"
                 onClick={(e) => {
-                  e.stopPropagation();
                   e.preventDefault();
+                  e.isPropagationStopped();
                   toggleLike();
                   handleLoveFilm();
                 }}

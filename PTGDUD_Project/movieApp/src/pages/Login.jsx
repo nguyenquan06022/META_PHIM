@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import loginBg from "../assets/images/login_bg.jpg";
+import { LoginContext } from "../global/LoginContext";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const { updateCurUser } = useContext(LoginContext);
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [pwd, setPwd] = useState("");
@@ -27,12 +29,9 @@ function Login() {
       if (res.data.success) {
         setSuccess(true);
         setError(null);
-        const userId = res.data.user?._id; // server trả về user
+        const userId = res.data.user?._id;
         if (userId) {
           navigate(`/user/${userId}`);
-          setTimeout(() => {
-            window.location.reload();
-          }, 0); // chuyển hướng đến trang người dùng
         } else {
           alert("Đăng nhập thành công, nhưng không tìm thấy thông tin user.");
         }

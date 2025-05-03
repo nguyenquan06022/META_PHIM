@@ -1,5 +1,5 @@
 "use client";
-
+import API from "../api/index";
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ToastContainer, toast, Flip } from "react-toastify";
@@ -45,6 +45,9 @@ export default function UserProfile() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [activeTab, setActiveTab] = useState("account");
   const [user, setUser] = useState(null);
+  const [favoriteMovies, setFavoriteMovies] = useState([]);
+  const [watchLaterMovies, setWatchLaterMovies] = useState([]);
+  const [continueWatchingMovies, setContinueWatchingMovies] = useState([]);
 
   const avatarList = [
     "/avatar/01.jpg",
@@ -60,226 +63,6 @@ export default function UserProfile() {
     "/avatar/11.jpg",
     "/avatar/12.jpg",
     "/avatar/13.jpg",
-  ];
-
-  const favoriteMovies = [
-    {
-      id: 1,
-      title: "Avengers: Endgame - The Epic Conclusion to the Infinity Saga",
-      year: 2019,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg",
-      genre: "Action, Adventure",
-    },
-    {
-      id: 2,
-      title: "Joker",
-      year: 2019,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BNGVjNWI4ZGUtNzE0MS00YTJmLWE0ZDctN2ZiYTk2YmI3NTYyXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg",
-      genre: "Crime, Drama",
-    },
-    {
-      id: 3,
-      title: "Parasite",
-      year: 2019,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_.jpg",
-      genre: "Thriller, Drama",
-    },
-    {
-      id: 4,
-      title:
-        "The Dark Knight - The Legend of the Batman Continues with the Joker",
-      year: 2008,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg",
-      genre: "Action, Crime",
-    },
-    {
-      id: 5,
-      title: "Inception",
-      year: 2010,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg",
-      genre: "Sci-Fi, Action",
-    },
-    {
-      id: 6,
-      title: "Interstellar",
-      year: 2014,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
-      genre: "Sci-Fi, Adventure",
-    },
-    {
-      id: 15,
-      title: "Spider-Man: Into the Spider-Verse",
-      year: 2018,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_.jpg",
-      genre: "Animation, Action",
-    },
-    {
-      id: 16,
-      title:
-        "The Shawshank Redemption: Extended Director's Cut with Additional Scenes",
-      year: 1994,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
-      genre: "Drama",
-    },
-    {
-      id: 17,
-      title: "The Godfather",
-      year: 1972,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
-      genre: "Crime, Drama",
-    },
-    {
-      id: 18,
-      title: "Pulp Fiction",
-      year: 1994,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
-      genre: "Crime, Drama",
-    },
-  ];
-
-  const watchLaterMovies = [
-    {
-      id: 7,
-      title: "The Shawshank Redemption",
-      year: 1994,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
-      genre: "Drama",
-    },
-    {
-      id: 8,
-      title: "The Godfather",
-      year: 1972,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
-      genre: "Crime, Drama",
-    },
-    {
-      id: 9,
-      title: "Pulp Fiction",
-      year: 1994,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
-      genre: "Crime, Drama",
-    },
-    {
-      id: 10,
-      title:
-        "The Lord of the Rings: The Return of the King - Extended Edition with Additional Footage",
-      year: 2003,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BNzA5ZDNlZWMtM2NhNS00NDJjLTk4NDItYTRmY2EwMWZlMTY3XkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
-      genre: "Adventure, Fantasy",
-    },
-    {
-      id: 19,
-      title: "The Matrix",
-      year: 1999,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg",
-      genre: "Action, Sci-Fi",
-    },
-    {
-      id: 20,
-      title: "Goodfellas",
-      year: 1990,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BY2NkZjEzMDgtN2RjYy00YzM1LWI4ZmQtMjIwYjFjNmI3ZGEwXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
-      genre: "Biography, Crime",
-    },
-    {
-      id: 21,
-      title: "The Silence of the Lambs",
-      year: 1991,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BNjNhZTk0ZmEtNjJhMi00YzFlLWE1MmEtYzM1M2ZmMGMwMTU4XkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg",
-      genre: "Crime, Drama, Thriller",
-    },
-    {
-      id: 22,
-      title: "Schindler's List",
-      year: 1993,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BNDE4OTMxMTctNmRhYy00NWE2LTg3YzItYTk3M2UwOTU5Njg4XkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg",
-      genre: "Biography, Drama, History",
-    },
-  ];
-
-  const continueWatchingMovies = [
-    {
-      id: 11,
-      title: "Fight Club",
-      year: 1999,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMmEzNTkxYjQtZTc0MC00YTVjLTg5ZTEtZWMwOWVlYzY0NWIwXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
-      genre: "Drama",
-      progress: 65,
-    },
-    {
-      id: 12,
-      title: "Forrest Gump",
-      year: 1994,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BNWIwODRlZTUtY2U3ZS00Yzg1LWJhNzYtMmZiYmEyNmU1NjMzXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg",
-      genre: "Drama, Romance",
-      progress: 30,
-    },
-    {
-      id: 13,
-      title: "The Matrix",
-      year: 1999,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg",
-      genre: "Action, Sci-Fi",
-      progress: 45,
-    },
-    {
-      id: 14,
-      title: "Goodfellas",
-      year: 1990,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BY2NkZjEzMDgtN2RjYy00YzM1LWI4ZmQtMjIwYjFjNmI3ZGEwXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
-      genre: "Biography, Crime",
-      progress: 80,
-    },
-    {
-      id: 23,
-      title:
-        "The Departed - Extended Cut with Director's Commentary and Behind the Scenes",
-      year: 2006,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMTI1MTY2OTIxNV5BMl5BanBnXkFtZTYwNjQ4NjY3._V1_.jpg",
-      genre: "Crime, Drama, Thriller",
-      progress: 15,
-    },
-    {
-      id: 24,
-      title: "Gladiator",
-      year: 2000,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMDliMmNhNDEtODUyOS00MjNlLTgxODEtN2U3NzIxMGVkZTA1L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg",
-      genre: "Action, Adventure, Drama",
-      progress: 50,
-    },
-    {
-      id: 25,
-      title: "The Green Mile",
-      year: 1999,
-      image:
-        "https://m.media-amazon.com/images/M/MV5BMTUxMzQyNjA5MF5BMl5BanBnXkFtZTYwOTU2NTY3._V1_.jpg",
-      genre: "Crime, Drama, Fantasy",
-      progress: 75,
-    },
   ];
 
   const handleUpdateUser = async (userData) => {
@@ -340,19 +123,148 @@ export default function UserProfile() {
     toast.success("Đổi mật khẩu thành công!");
   };
 
+  async function getLinkFirstVideo(movie) {
+    const eps = await API.getEps(movie.slug);
+    const link = `/watch/${movie.slug}?server=${
+      eps[0].server_name.split("#")[1]
+    }&ep=${eps[0].server_data[0].name}`;
+    return link;
+  }
+
+  const handleLoveFilm = async (movie) => {
+    if (!movie) return;
+
+    const obj = {
+      category:
+        movie.category?.map((cat) => ({
+          id: cat.id,
+          name: cat.name,
+          slug: cat.slug,
+        })) || [],
+      chap: movie.chap || "",
+      imdb: movie.imdb || "",
+      tmdb: {
+        type: movie.tmdb?.type || "",
+        id: movie.tmdb?.id || "",
+        season: movie.tmdb?.season || null,
+        vote_average: movie.tmdb?.vote_average || 0,
+        vote_count: movie.tmdb?.vote_count || 0,
+      },
+      img: movie.img || "",
+      lang: movie.lang || "",
+      name: movie.name || "",
+      originName: movie.originName || "",
+      poster_url: movie.poster_url || "",
+      quality: movie.quality || "",
+      slug: movie.slug || "",
+      time: movie.time || "",
+      year: movie.year || new Date().getFullYear(),
+    };
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/handleLoveFilm",
+        obj,
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.data.message == "Đã bỏ thích") {
+        toast.info("Đã bỏ thích");
+      } else if (
+        res.data.message == "Thêm vào danh sách yêu thích thành công"
+      ) {
+        toast.success("Đã thêm phim vào danh sách yêu thích");
+      }
+    } catch (error) {
+      console.log("Lỗi khi thêm phim:", error);
+      if (error.response.data.message == "Chưa đăng nhập")
+        toast.error("Vui lòng đăng nhập để thực hiện hành động");
+    }
+  };
+
+  const handleWatchLater = async (movie) => {
+    if (!movie) return;
+
+    const obj = {
+      category:
+        movie.category?.map((cat) => ({
+          id: cat.id,
+          name: cat.name,
+          slug: cat.slug,
+        })) || [],
+      chap: movie.chap || "",
+      imdb: movie.imdb || "",
+      tmdb: {
+        type: movie.tmdb?.type || "",
+        id: movie.tmdb?.id || "",
+        season: movie.tmdb?.season || null,
+        vote_average: movie.tmdb?.vote_average || 0,
+        vote_count: movie.tmdb?.vote_count || 0,
+      },
+      img: movie.img || "",
+      lang: movie.lang || "",
+      name: movie.name || "",
+      originName: movie.origin_name || "",
+      poster_url: movie.poster_url || "",
+      quality: movie.quality || "",
+      slug: movie.slug || "",
+      time: movie.time || "",
+      year: movie.year || new Date().getFullYear(),
+    };
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/handleWatchLater",
+        obj,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res);
+      if (res.data.message === "Đã xóa khỏi danh sách xem sau") {
+        toast.info("Đã xóa khỏi danh sách xem sau");
+      } else if (res.data.message === "Thêm vào danh sách xem sau thành công") {
+        toast.success("Đã thêm phim vào danh sách xem sau");
+      }
+    } catch (error) {
+      console.log("Lỗi khi thêm vào danh sách xem sau:", error);
+      if (error.response?.data?.message === "Chưa đăng nhập")
+        toast.error("Vui lòng đăng nhập để thực hiện hành động");
+    }
+  };
+
+  const handleRemoveLoveFilm = (movie) => {
+    setFavoriteMovies(favoriteMovies.filter((item) => item.slug != movie.slug));
+  };
+
+  const handleRemoveWatchLaterFilm = (movie) => {
+    setWatchLaterMovies(
+      watchLaterMovies.filter((item) => item.slug != movie.slug)
+    );
+  };
+
   async function fetchData() {
     try {
       const res = await axios.get("http://localhost:3000/getUserInfor", {
         withCredentials: true,
       });
       setUser(res.data);
+      setFavoriteMovies(
+        res.data.loveFilms.filter((item) => item.isDeleted == false)
+      );
+      setContinueWatchingMovies(
+        res.data.watchContinues.filter((item) => item.isDeleted == false)
+      );
+      setWatchLaterMovies(
+        res.data.watchLaters.filter((item) => item.isDeleted == false)
+      );
       setUserForUpdate({
         username: res.data.username,
         password: res.data.password,
         avt: res.data.avt,
         gg_id: "",
       });
-      //#
       setUserName(res.data.username);
       setSelectedAvatar(res.data.avt);
     } catch (error) {
@@ -389,31 +301,61 @@ export default function UserProfile() {
     return (
       <Row className="g-3 mp-equal-height-columns">
         {movies.map((movie) => (
-          <Col xs={6} sm={4} md={3} key={movie.id}>
+          <Col xs={6} sm={4} md={3} key={movie.slug}>
             <div className="mp-movie-card">
-              <img src={movie.image || "/placeholder.svg"} alt={movie.title} />
+              <img src={movie.img ? movie.img : movie.image} alt={movie.name} />
               <div className="mp-movie-actions">
-                <button className="mp-action-btn">
+                <button
+                  className="mp-action-btn"
+                  onClick={async () => {
+                    const link = await getLinkFirstVideo(movie);
+                    navigate(link);
+                  }}
+                >
                   <Play size={14} />
                 </button>
-                <button className="mp-action-btn">
+                <button
+                  className="mp-action-btn"
+                  onClick={() => {
+                    navigate(`/infor/${movie.slug}`);
+                  }}
+                >
                   <Info size={14} />
                 </button>
                 {!showProgress && (
-                  <button className="mp-action-btn">
+                  <button
+                    className="mp-action-btn"
+                    onClick={() => {
+                      if (activeTab == "favorites") {
+                        handleLoveFilm(movie);
+                        handleRemoveLoveFilm(movie);
+                      } else if (activeTab == "watch-later") {
+                        handleWatchLater(movie);
+                        handleRemoveWatchLaterFilm(movie);
+                      }
+                    }}
+                  >
                     <X size={14} />
                   </button>
                 )}
               </div>
               <div className="mp-overlay">
-                <div className="mp-title" title={movie.title}>
-                  {movie.title}
+                <div
+                  className="mp-title"
+                  style={{ color: "white" }}
+                  title={movie.name}
+                >
+                  {movie.name}
                 </div>
                 <div className="mp-info">
-                  {movie.year} • {movie.genre}
+                  {movie.nameEp ? `Tập ${movie.nameEp} • ` : ""} {movie.year} •{" "}
+                  {movie.quality}
                 </div>
                 {showProgress && (
-                  <ProgressBar now={movie.progress} className="mp-progress" />
+                  <ProgressBar
+                    now={movie.percentRemain}
+                    className="mp-progress"
+                  />
                 )}
               </div>
             </div>
@@ -798,7 +740,6 @@ export default function UserProfile() {
       <Modal
         show={showAvatarModal}
         onHide={() => setShowAvatarModal(false)}
-        centered
         size="lg"
         contentClassName="bg-dark text-white border-0"
         className="mp-modal"

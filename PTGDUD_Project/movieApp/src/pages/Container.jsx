@@ -72,7 +72,13 @@ function Container() {
           </div>
           <ul
             className={`navbar-menu ${showMenu ? "show" : ""}`}
-            style={{ marginBottom: 0, fontSize: 20, fontWeight: "bold" }}
+            style={{
+              marginTop: showMenu ? 20 : 0,
+              marginBottom: 0,
+              fontSize: 20,
+              fontWeight: "bold",
+              overflowY: showMenu ? "auto" : "unset",
+            }}
           >
             <li
               className={`nav-item ${
@@ -155,6 +161,22 @@ function Container() {
                 Giới thiệu
               </Link>
             </li>
+            {user && user.role == "admin" ? (
+              <li
+                className={`nav-item ${
+                  location.pathname === "/admin" ? "active" : ""
+                }`}
+                onClick={() => {
+                  closeDropDown();
+                }}
+              >
+                <Link to="/dashboard" className="nav-link">
+                  Admin dashboard
+                </Link>
+              </li>
+            ) : (
+              <li></li>
+            )}
           </ul>
           {user && user.username ? (
             <Link

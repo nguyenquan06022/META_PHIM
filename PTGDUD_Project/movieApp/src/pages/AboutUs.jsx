@@ -1,87 +1,178 @@
+import { Container, Row, Col, Button, Card } from "react-bootstrap";
 import { ArrowLeft } from "lucide-react";
-import "../assets/css/blog-hero.module.css";
-import avtDev from "/avatar/avtD.png";
-import avtDev2 from "/avatar/me.png";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Link } from "react-router-dom";
+import styles from "../assets/css/about-us.module.scss";
+import classNames from "classnames/bind";
+import { FaInstagram, FaFacebook, FaGithub } from "react-icons/fa";
 
 export default function AboutUs() {
+  const cx = classNames.bind(styles);
   return (
-    <div className="blog-page">
-      {/* Navigation */}
-      <div className="nav-container">
-        <button className="back-button">
-          <ArrowLeft size={24} />
-        </button>
-      </div>
+    <div className={cx("about-us-page")}>
+      <Container className={cx("py-4")}>
+        <Link to={"/"} style={{ textDecoration: "none" }}>
+          <Button
+            style={{
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+            }}
+            className={cx("back-button btn-warning")}
+          >
+            <ArrowLeft size={20} />
+          </Button>
+        </Link>
+      </Container>
 
       {/* Hero Section */}
-      <div className="hero-section">
-        {/* Left Background */}
-        <div className="bg-left"></div>
+      <div className={cx("hero-section", "position-relative", "py-5")}>
+        {/* Background Elements */}
+        <div className={cx("bg-left")}></div>
+        <div className={cx("bg-right")}></div>
 
-        {/* Right Background */}
-        <div className="bg-right"></div>
-
-        {/* Center Cards Container */}
-        <div className="cards-container">
-          <div className="cards-row">
+        {/* Cards Container */}
+        <Container className={cx("position-relative", "z-index-1")}>
+          <Row className={cx("justify-content-center", "g-4")}>
             {/* First Team Member Card */}
-            <div className="member-card">
-              <div className="card-body">
-                <div className="card-text">
-                  <h2 className="card-title">
-                    Hi! I Am <br />
-                    Developer
-                  </h2>
-                  <p className="card-subtitle">Frontend & UI Specialist</p>
-                </div>
-                <div className="image-container">
-                  <div className="image-bg "></div>
-                  <img
-                    src={avtDev}
-                    alt="Developer 1"
-                    className="profile-image"
-                  />
-                </div>
-              </div>
-            </div>
+            <Col md={6} lg={5}>
+              <Card className={cx("team-card", "developer-card", "h-100")}>
+                <Card.Body
+                  className={cx(
+                    "d-flex",
+                    "flex-column",
+                    "flex-md-row",
+                    "align-items-center"
+                  )}
+                >
+                  <div className={cx("card-content", "me-md-4")}>
+                    <h2 className={cx("card-title", "developer-title")}>
+                      Hi! I Am <br />
+                      Developer
+                    </h2>
+                    <p className={cx("card-subtitle", "text-white")}>
+                      Frontend & UI Specialist
+                    </p>
+                  </div>
+                  <div className={cx("image-wrapper", "mt-3", "mt-md-0")}>
+                    <div className={cx("image-glow", "developer-glow")}></div>
+                    <div className={cx("image-container")}>
+                      <img
+                        src="/avatar/avtD.png"
+                        alt="Developer"
+                        className={cx("profile-image")}
+                      />
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
 
             {/* Second Team Member Card */}
-            <div className="member-card">
-              <div className="card-body">
-                <div className="card-text">
-                  <h2 className="card-title">
-                    Hello! I Am <br />
-                    Designer
-                  </h2>
-                  <p className="card-subtitle">UX & Graphic Designer</p>
-                </div>
-                <div className="image-container">
-                  <div className="image-bg"></div>
-                  <img
-                    src={avtDev2}
-                    alt="Developer 2"
-                    className="profile-image"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+            <Col md={6} lg={5}>
+              <Card className={cx("team-card", "designer-card", "h-100")}>
+                <Card.Body
+                  className={cx(
+                    "d-flex",
+                    "flex-column",
+                    "flex-md-row",
+                    "align-items-center"
+                  )}
+                >
+                  <div className={cx("card-content", "me-md-4")}>
+                    <h2 className={cx("card-title", "designer-title")}>
+                      Hello! I Am <br />
+                      Designer
+                    </h2>
+                    <p className={cx("card-subtitle", "text-white")}>
+                      UX & Graphic Designer
+                    </p>
+                  </div>
+                  <div className={cx("image-wrapper", "mt-3", "mt-md-0")}>
+                    <div className={cx("image-glow", "designer-glow")}></div>
+                    <div className={cx("image-container")}>
+                      <img
+                        src="/avatar/me.png"
+                        alt="Designer"
+                        className={cx("profile-image")}
+                      />
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
       </div>
 
-      {/* Content Section */}
-      <div className="content-section ">
-        <div className="content-container">
-          <p className="content-text" style={{ color: "white" }}>
-            <strong>QComic</strong> là một sản phẩm nhỏ nhưng khá tâm huyết của
-            Quân, là kho truyện đa dạng và được cập nhật liên tục, mọi dữ liệu
-            truyện tranh thuộc quyền sở hữu của{" "}
-            <a href="#" className="link">
-              Otruyen.cc
-            </a>
-            . Hi vọng bạn đọc có những giây phút giải trí vui vẻ tại QComic ^_^.
-          </p>
-        </div>
+      <div className={cx("content-section", "py-5")}>
+        <Container>
+          <Row className={cx("justify-content-center")}>
+            <Col md={10} lg={8}>
+              <div className={cx("text-center")}>
+                <span className={cx("about-badge", "mb-3", "d-inline-block")}>
+                  About META PHIM
+                </span>
+                <p className={cx("content-text")}>
+                  <strong>META PHIM</strong> là một sản phẩm nhỏ nhưng đầy tâm
+                  huyết của Quân, là kho phim đa dạng và được cập nhật liên tục.
+                  Mọi dữ liệu phim thuộc quyền sở hữu của{" "}
+                  <a href="https://ophim17.cc/" className={cx("custom-link")}>
+                    ophim17.cc
+                  </a>
+                  . Hi vọng bạn xem có những giây phút giải trí thật tuyệt vời
+                  tại META PHIM ^_^.
+                </p>
+
+                <div className={cx("contact-section", "py-4")}>
+                  <div className={cx("container")}>
+                    <div className={cx("contact-wrapper")}>
+                      <h3 className={cx("contact-title")}>Liên hệ:</h3>
+
+                      <div className={cx("social-links-container")}>
+                        <a
+                          href="https://www.instagram.com/nguyenquan06022004/"
+                          className={cx("social-link", "instagram-link")}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <div className={cx("icon-wrapper")}>
+                            <FaInstagram size={22} />
+                          </div>
+                          <span>Instagram</span>
+                        </a>
+
+                        <a
+                          href="https://www.facebook.com/profile.php?id=100013568979868"
+                          className={cx("social-link", "facebook-link")}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <div className={cx("icon-wrapper")}>
+                            <FaFacebook size={22} />
+                          </div>
+                          <span>Facebook</span>
+                        </a>
+
+                        <a
+                          href="https://github.com/nguyenquan06022"
+                          className={cx("social-link", "github-link")}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <div className={cx("icon-wrapper")}>
+                            <FaGithub size={22} />
+                          </div>
+                          <span>GitHub</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Col>
+          </Row>
+        </Container>
       </div>
     </div>
   );

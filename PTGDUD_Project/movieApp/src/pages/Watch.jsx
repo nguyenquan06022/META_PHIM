@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import LoadingOverlay from "../components/LoadingOverlay";
 import VideoPlayerMain from "../components/VideoPlayerMain";
 import { LoginContext } from "../global/LoginContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../assets/css/watch.css";
 import API from "../api/index";
 function Watch() {
@@ -215,7 +215,9 @@ function Watch() {
           <div className="col-md-5 col-12">
             <div className="row">
               <div className="col-4">
-                <img src={movie.thumb_url} alt="" style={{ width: "100%" }} />
+                <Link to={`/infor/${movie.slug}`}>
+                  <img src={movie.thumb_url} alt="" style={{ width: "100%" }} />
+                </Link>
               </div>
               <div className="col-8">
                 <h5 className="card-title" style={{ color: "white" }}>

@@ -19,8 +19,13 @@ const UserModel = new Schema(
       type: String,
       default: "/avatar/01.jpg",
     },
+    role: {
+      type: String,
+      default: "user",
+    },
   },
   {
+    timestamps: true,
     collection: "Users",
   }
 );

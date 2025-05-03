@@ -130,6 +130,7 @@ const UserData = new Schema(
     watchLaters: [watchLater],
   },
   {
+    timestamps: true,
     collection: "UserDatas",
   }
 );
