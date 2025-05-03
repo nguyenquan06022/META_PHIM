@@ -1,129 +1,283 @@
-import { useEffect, useState, useContext } from "react";
-import { useParams } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import axios from "axios";
-import { LoginContext } from "../global/LoginContext";
+"use client";
 
-function User() {
-  const { setUser } = useContext(LoginContext);
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { ToastContainer, toast, Flip } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Form,
+  Button,
+  Modal,
+  Image,
+  ProgressBar,
+} from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import {
+  Heart,
+  Plus,
+  RotateCcw,
+  User,
+  LogOut,
+  Play,
+  X,
+  Info,
+} from "lucide-react";
+import "../assets/css/userProfile.css"; // Import the dedicated CSS file
+
+export default function UserProfile() {
   const { id } = useParams();
   const [userName, setUserName] = useState("quanidol62");
-  const [activeTab, setActiveTab] = useState("account");
-  const [showModal, setShowModal] = useState(false);
-  const [showModalAvatar, setShowModalAvatar] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [hoveredAvatar, setHoveredAvatar] = useState(null);
   const [selectedAvatar, setSelectedAvatar] = useState("/avatar/01.jpg");
-  const avatarList = Array.from(
-    { length: 13 },
-    (_, i) => `/avatar/${String(i + 1).padStart(2, "0")}.jpg`
-  );
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [activeTab, setActiveTab] = useState("account");
+  const [user, setUser] = useState(null);
 
-  const notify = (mes, type) => {
-    switch (type) {
-      case "success": {
-        toast.success(mes);
-        break;
-      }
-      case "fail": {
-        toast.error(mes);
-        break;
-      }
-    }
-  };
+  const avatarList = [
+    "/avatar/01.jpg",
+    "/avatar/02.jpg",
+    "/avatar/03.jpg",
+    "/avatar/04.jpg",
+    "/avatar/05.jpg",
+    "/avatar/06.jpg",
+    "/avatar/07.jpg",
+    "/avatar/08.jpg",
+    "/avatar/09.jpg",
+    "/avatar/10.jpg",
+    "/avatar/11.jpg",
+    "/avatar/12.jpg",
+    "/avatar/13.jpg",
+  ];
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "favorites":
-        return <div>Nội dung Yêu thích sẽ hiển thị ở đây</div>;
-      case "watch-later":
-        return <div>Nội dung Xem sau sẽ hiển thị ở đây</div>;
-      case "continue-watching":
-        return <div>Nội dung Xem tiếp sẽ hiển thị ở đây</div>;
-      case "account":
-      default:
-        return (
-          <div className="row">
-            <div className="col-md-8">
-              <div className="mb-3">
-                <label className="form-label">Email</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  value="nguyenquan06022004@gmail.com"
-                  readOnly
-                  style={{
-                    backgroundColor: "#1F2029",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "8px",
-                  }}
-                />
-              </div>
+  // Sample movie data with more movies and longer titles
+  const favoriteMovies = [
+    {
+      id: 1,
+      title: "Avengers: Endgame - The Epic Conclusion to the Infinity Saga",
+      year: 2019,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg",
+      genre: "Action, Adventure",
+    },
+    {
+      id: 2,
+      title: "Joker",
+      year: 2019,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BNGVjNWI4ZGUtNzE0MS00YTJmLWE0ZDctN2ZiYTk2YmI3NTYyXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg",
+      genre: "Crime, Drama",
+    },
+    {
+      id: 3,
+      title: "Parasite",
+      year: 2019,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_.jpg",
+      genre: "Thriller, Drama",
+    },
+    {
+      id: 4,
+      title:
+        "The Dark Knight - The Legend of the Batman Continues with the Joker",
+      year: 2008,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg",
+      genre: "Action, Crime",
+    },
+    {
+      id: 5,
+      title: "Inception",
+      year: 2010,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg",
+      genre: "Sci-Fi, Action",
+    },
+    {
+      id: 6,
+      title: "Interstellar",
+      year: 2014,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
+      genre: "Sci-Fi, Adventure",
+    },
+    {
+      id: 15,
+      title: "Spider-Man: Into the Spider-Verse",
+      year: 2018,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_.jpg",
+      genre: "Animation, Action",
+    },
+    {
+      id: 16,
+      title:
+        "The Shawshank Redemption: Extended Director's Cut with Additional Scenes",
+      year: 1994,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
+      genre: "Drama",
+    },
+    {
+      id: 17,
+      title: "The Godfather",
+      year: 1972,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
+      genre: "Crime, Drama",
+    },
+    {
+      id: 18,
+      title: "Pulp Fiction",
+      year: 1994,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
+      genre: "Crime, Drama",
+    },
+  ];
 
-              <div className="mb-3">
-                <label className="form-label">Tên hiển thị</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  style={{
-                    backgroundColor: "#1F2029",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "8px",
-                  }}
-                />
-              </div>
+  const watchLaterMovies = [
+    {
+      id: 7,
+      title: "The Shawshank Redemption",
+      year: 1994,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
+      genre: "Drama",
+    },
+    {
+      id: 8,
+      title: "The Godfather",
+      year: 1972,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
+      genre: "Crime, Drama",
+    },
+    {
+      id: 9,
+      title: "Pulp Fiction",
+      year: 1994,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
+      genre: "Crime, Drama",
+    },
+    {
+      id: 10,
+      title:
+        "The Lord of the Rings: The Return of the King - Extended Edition with Additional Footage",
+      year: 2003,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BNzA5ZDNlZWMtM2NhNS00NDJjLTk4NDItYTRmY2EwMWZlMTY3XkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
+      genre: "Adventure, Fantasy",
+    },
+    {
+      id: 19,
+      title: "The Matrix",
+      year: 1999,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg",
+      genre: "Action, Sci-Fi",
+    },
+    {
+      id: 20,
+      title: "Goodfellas",
+      year: 1990,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BY2NkZjEzMDgtN2RjYy00YzM1LWI4ZmQtMjIwYjFjNmI3ZGEwXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
+      genre: "Biography, Crime",
+    },
+    {
+      id: 21,
+      title: "The Silence of the Lambs",
+      year: 1991,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BNjNhZTk0ZmEtNjJhMi00YzFlLWE1MmEtYzM1M2ZmMGMwMTU4XkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg",
+      genre: "Crime, Drama, Thriller",
+    },
+    {
+      id: 22,
+      title: "Schindler's List",
+      year: 1993,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BNDE4OTMxMTctNmRhYy00NWE2LTg3YzItYTk3M2UwOTU5Njg4XkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg",
+      genre: "Biography, Drama, History",
+    },
+  ];
 
-              <button
-                className="btn"
-                style={{
-                  backgroundColor: "rgb(235, 200, 113)",
-                  color: "#000",
-                  fontWeight: "bold",
-                  padding: "10px 20px",
-                  borderRadius: "8px",
-                }}
-                onClick={() => notify("Cập nhật thành công", "success")}
-              >
-                Cập nhật
-              </button>
-
-              <p className="mt-3" style={{ color: "#aaa" }}>
-                Đổi mật khẩu, nhấn vào{" "}
-                <a
-                  role="button"
-                  style={{ color: "#FFD43B", cursor: "pointer" }}
-                  onClick={() => setShowModal(true)}
-                >
-                  đây
-                </a>
-              </p>
-            </div>
-
-            <div className="col-md-4 text-center">
-              <img
-                src="/avatar/01.jpg"
-                alt="avatar"
-                className="rounded-circle"
-                style={{
-                  width: 120,
-                  height: 120,
-                  objectFit: "cover",
-                  border: "2px solid #FFD43B",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  setShowModalAvatar(true);
-                }}
-              />
-              <p className="mt-3">Đổi ảnh đại diện</p>
-            </div>
-          </div>
-        );
-    }
-  };
+  const continueWatchingMovies = [
+    {
+      id: 11,
+      title: "Fight Club",
+      year: 1999,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BMmEzNTkxYjQtZTc0MC00YTVjLTg5ZTEtZWMwOWVlYzY0NWIwXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
+      genre: "Drama",
+      progress: 65,
+    },
+    {
+      id: 12,
+      title: "Forrest Gump",
+      year: 1994,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BNWIwODRlZTUtY2U3ZS00Yzg1LWJhNzYtMmZiYmEyNmU1NjMzXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg",
+      genre: "Drama, Romance",
+      progress: 30,
+    },
+    {
+      id: 13,
+      title: "The Matrix",
+      year: 1999,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg",
+      genre: "Action, Sci-Fi",
+      progress: 45,
+    },
+    {
+      id: 14,
+      title: "Goodfellas",
+      year: 1990,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BY2NkZjEzMDgtN2RjYy00YzM1LWI4ZmQtMjIwYjFjNmI3ZGEwXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
+      genre: "Biography, Crime",
+      progress: 80,
+    },
+    {
+      id: 23,
+      title:
+        "The Departed - Extended Cut with Director's Commentary and Behind the Scenes",
+      year: 2006,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BMTI1MTY2OTIxNV5BMl5BanBnXkFtZTYwNjQ4NjY3._V1_.jpg",
+      genre: "Crime, Drama, Thriller",
+      progress: 15,
+    },
+    {
+      id: 24,
+      title: "Gladiator",
+      year: 2000,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BMDliMmNhNDEtODUyOS00MjNlLTgxODEtN2U3NzIxMGVkZTA1L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg",
+      genre: "Action, Adventure, Drama",
+      progress: 50,
+    },
+    {
+      id: 25,
+      title: "The Green Mile",
+      year: 1999,
+      image:
+        "https://m.media-amazon.com/images/M/MV5BMTUxMzQyNjA5MF5BMl5BanBnXkFtZTYwOTU2NTY3._V1_.jpg",
+      genre: "Crime, Drama, Fantasy",
+      progress: 75,
+    },
+  ];
 
   const handleAvatarSelect = (avatarPath) => {
     setSelectedAvatar(avatarPath);
@@ -131,21 +285,30 @@ function User() {
 
   const handleAvatarSave = () => {
     // In a real application, you would send the selectedAvatar to your backend
-    notify("Ảnh đại diện đã được cập nhật!", "success");
-    setShowModalAvatar(false);
+    toast.success("Ảnh đại diện đã được cập nhật!");
+    setShowAvatarModal(false);
   };
 
-  const handleAvatarHover = (avatarPath) => {
-    setHoveredAvatar(avatarPath);
+  const handleUpdateProfile = () => {
+    // In a real application, you would send the updated profile to your backend
+    toast.success("Cập nhật thành công");
   };
 
-  const handleAvatarMouseLeave = () => {
-    setHoveredAvatar(null);
+  const handlePasswordChange = () => {
+    // Validate passwords
+    if (newPassword !== confirmPassword) {
+      toast.error("Mật khẩu mới không khớp!");
+      return;
+    }
+
+    // In a real application, you would send the password change request to your backend
+    setShowPasswordModal(false);
+    toast.success("Đổi mật khẩu thành công!");
   };
 
-  //load infor user
+  // Load user info
   useEffect(() => {
-    async function fetchdata() {
+    async function fetchData() {
       try {
         const res = await axios.get("http://localhost:3000/getUserInfor", {
           withCredentials: true,
@@ -155,429 +318,481 @@ function User() {
         console.log(error);
       }
     }
-    fetchdata();
+    fetchData();
   }, [id]);
 
+  const renderMovieGrid = (movies, showProgress = false) => {
+    return (
+      <Row className="g-3 mp-equal-height-columns">
+        {movies.map((movie) => (
+          <Col xs={6} sm={4} md={3} key={movie.id}>
+            <div className="mp-movie-card">
+              <img src={movie.image || "/placeholder.svg"} alt={movie.title} />
+              <div className="mp-movie-actions">
+                <button className="mp-action-btn">
+                  <Play size={14} />
+                </button>
+                <button className="mp-action-btn">
+                  <Info size={14} />
+                </button>
+                {!showProgress && (
+                  <button className="mp-action-btn">
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+              <div className="mp-overlay">
+                <div className="mp-title" title={movie.title}>
+                  {movie.title}
+                </div>
+                <div className="mp-info">
+                  {movie.year} • {movie.genre}
+                </div>
+                {showProgress && (
+                  <ProgressBar now={movie.progress} className="mp-progress" />
+                )}
+              </div>
+            </div>
+          </Col>
+        ))}
+      </Row>
+    );
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "favorites":
+        return (
+          <Card className="mp-card mp-main-content-card">
+            <Card.Body className="p-4">
+              <div className="mb-4">
+                <h2 className="text-white fs-3 fw-bold mp-gradient-heading">
+                  Yêu thích
+                </h2>
+                <p className="mp-text-secondary">
+                  Danh sách phim bạn đã yêu thích
+                </p>
+              </div>
+              <div className="mp-scrollable-content">
+                {renderMovieGrid(favoriteMovies)}
+              </div>
+            </Card.Body>
+          </Card>
+        );
+      case "watch-later":
+        return (
+          <Card className="mp-card mp-main-content-card">
+            <Card.Body className="p-4">
+              <div className="mb-4">
+                <h2 className="text-white fs-3 fw-bold mp-gradient-heading">
+                  Xem sau
+                </h2>
+                <p className="mp-text-secondary">
+                  Danh sách phim bạn muốn xem sau
+                </p>
+              </div>
+              <div className="mp-scrollable-content">
+                {renderMovieGrid(watchLaterMovies)}
+              </div>
+            </Card.Body>
+          </Card>
+        );
+      case "continue-watching":
+        return (
+          <Card className="mp-card mp-main-content-card">
+            <Card.Body className="p-4">
+              <div className="mb-4">
+                <h2 className="text-white fs-3 fw-bold mp-gradient-heading">
+                  Xem tiếp
+                </h2>
+                <p className="mp-text-secondary">
+                  Tiếp tục xem những phim bạn đang xem dở
+                </p>
+              </div>
+              <div className="mp-scrollable-content">
+                {renderMovieGrid(continueWatchingMovies, true)}
+              </div>
+            </Card.Body>
+          </Card>
+        );
+      case "account":
+      default:
+        return (
+          <Card className="mp-card mp-main-content-card">
+            <Card.Body className="p-4">
+              <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+                <div>
+                  <h2 className="text-white fs-3 fw-bold mp-gradient-heading">
+                    Tài khoản
+                  </h2>
+                  <p className="mp-text-secondary">
+                    Cập nhật thông tin tài khoản
+                  </p>
+                </div>
+              </div>
+
+              <Row>
+                <Col md={8}>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="mp-form-label">Email</Form.Label>
+                    <Form.Control
+                      type="email"
+                      value="nguyenquan06022004@gmail.com"
+                      readOnly
+                      className="mp-form-control"
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                    <Form.Label className="mp-form-label">
+                      Tên hiển thị
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      className="mp-form-control"
+                    />
+                  </Form.Group>
+
+                  <Button
+                    style={{
+                      backgroundColor: "rgb(235,200,113)",
+                      border: "none",
+                      color: "#000",
+                      fontWeight: "bold",
+                    }}
+                    onClick={handleUpdateProfile}
+                    className="mb-3 mp-btn"
+                  >
+                    Cập nhật
+                  </Button>
+
+                  <p className="mp-text-secondary">
+                    Đổi mật khẩu, nhấn vào{" "}
+                    <Button
+                      variant="link"
+                      onClick={() => setShowPasswordModal(true)}
+                      className="p-0 text-decoration-none"
+                      style={{ color: "rgb(235,200,113)" }}
+                    >
+                      đây
+                    </Button>
+                  </p>
+                </Col>
+
+                <Col md={4} className="text-center">
+                  <div className="position-relative d-inline-block">
+                    <Image
+                      src={selectedAvatar || "/placeholder.svg"}
+                      alt="User avatar"
+                      roundedCircle
+                      className="mp-rounded-circle"
+                      style={{
+                        width: "120px",
+                        height: "120px",
+                        objectFit: "cover",
+                        border: "4px solid rgb(235, 200, 113)",
+                        boxShadow: "0 8px 20px rgba(235, 200, 113, 0.2)",
+                      }}
+                    />
+                    <div
+                      className="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 rounded-circle d-flex align-items-center justify-content-center opacity-0 mp-hover-opacity-100"
+                      style={{
+                        cursor: "pointer",
+                        transition: "opacity 0.2s",
+                        opacity: 0,
+                      }}
+                      onClick={() => setShowAvatarModal(true)}
+                      onMouseOver={(e) => (e.currentTarget.style.opacity = 1)}
+                      onMouseOut={(e) => (e.currentTarget.style.opacity = 0)}
+                    >
+                      <span className="text-white">Đổi ảnh</span>
+                    </div>
+                  </div>
+                  <p className="mt-3 mp-text-secondary">
+                    Nhấn vào ảnh để thay đổi
+                  </p>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        );
+    }
+  };
+
   return (
-    <div
-      className="container-fluid"
-      style={{ minHeight: "100vh", color: "white", padding: 20 }}
-    >
+    <div className="mp-container mp-animated-bg">
       <ToastContainer
-        toastClassName="custom-toast-left-center"
         position="top-right"
-      ></ToastContainer>
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition={Flip}
+      />
 
-      {/* Modal for password change (keep this as is) */}
-      {showModal && (
-        <>
-          {/* Overlay */}
-          <div
-            onClick={() => setShowModal(false)}
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              backgroundColor: "rgba(19, 23, 39,0.8)",
-              zIndex: 999,
-            }}
-          />
+      <Container className="py-5">
+        <Row className="g-4 mp-equal-height-columns">
+          {/* Sidebar */}
+          <Col md={3}>
+            <Card className="mp-card mp-sidebar-card">
+              <Card.Body className="p-4">
+                <h3 className="mb-4 text-white mp-gradient-heading">
+                  Quản lý tài khoản
+                </h3>
+                <div className="d-flex flex-column gap-2">
+                  <Button
+                    variant={
+                      activeTab === "favorites" ? "warning-user" : "dark-user"
+                    }
+                    className="text-start d-flex align-items-center mp-btn"
+                    style={{
+                      backgroundColor:
+                        activeTab === "favorites"
+                          ? "rgb(235,200,113)"
+                          : "#2A2C39",
+                      border: "none",
+                      color: activeTab === "favorites" ? "#000" : "#fff",
+                    }}
+                    onClick={() => setActiveTab("favorites")}
+                  >
+                    <Heart size={18} className="me-2" />
+                    Yêu thích
+                  </Button>
 
-          {/* Modal */}
-          <div
-            style={{
-              position: "fixed",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              backgroundColor: "rgb(42, 49, 78)",
-              padding: "40px 20px",
-              borderRadius: "12px",
-              zIndex: 1000,
-              width: "90%",
-              maxWidth: "400px",
-              color: "white",
-            }}
+                  <Button
+                    variant={
+                      activeTab === "watch-later" ? "warning-user" : "dark-user"
+                    }
+                    className="text-start d-flex align-items-center mp-btn"
+                    style={{
+                      backgroundColor:
+                        activeTab === "watch-later"
+                          ? "rgb(235,200,113)"
+                          : "#2A2C39",
+                      border: "none",
+                      color: activeTab === "watch-later" ? "#000" : "#fff",
+                    }}
+                    onClick={() => setActiveTab("watch-later")}
+                  >
+                    <Plus size={18} className="me-2" />
+                    Xem sau
+                  </Button>
+
+                  <Button
+                    variant={
+                      activeTab === "continue-watching"
+                        ? "warning-user"
+                        : "dark-user"
+                    }
+                    className="text-start d-flex align-items-center mp-btn"
+                    style={{
+                      backgroundColor:
+                        activeTab === "continue-watching"
+                          ? "rgb(235,200,113)"
+                          : "#2A2C39",
+                      border: "none",
+                      color:
+                        activeTab === "continue-watching" ? "#000" : "#fff",
+                    }}
+                    onClick={() => setActiveTab("continue-watching")}
+                  >
+                    <RotateCcw size={18} className="me-2" />
+                    Xem tiếp
+                  </Button>
+
+                  <Button
+                    variant={
+                      activeTab === "account" ? "warning-user" : "dark-user"
+                    }
+                    className="text-start d-flex align-items-center mp-btn"
+                    style={{
+                      backgroundColor:
+                        activeTab === "account"
+                          ? "rgb(235,200,113)"
+                          : "#2A2C39",
+                      border: "none",
+                      color: activeTab === "account" ? "#000" : "#fff",
+                    }}
+                    onClick={() => setActiveTab("account")}
+                  >
+                    <User size={18} className="me-2" />
+                    Tài khoản
+                  </Button>
+
+                  <hr className="my-3 bg-secondary" />
+
+                  <Button
+                    variant="dark"
+                    className="text-start d-flex align-items-center mp-btn"
+                    style={{ backgroundColor: "#2A2C39", border: "none" }}
+                  >
+                    <LogOut size={18} className="me-2" />
+                    Đăng xuất
+                  </Button>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          {/* Main Content */}
+          <Col md={9}>{renderTabContent()}</Col>
+        </Row>
+      </Container>
+
+      {/* Password Change Modal */}
+      <Modal
+        show={showPasswordModal}
+        onHide={() => setShowPasswordModal(false)}
+        centered
+        contentClassName="bg-dark text-white border-0"
+        className="mp-modal"
+      >
+        <Modal.Header className="border-0">
+          <Modal.Title className="text-center w-100">Đổi mật khẩu</Modal.Title>
+          <Button
+            variant="link"
+            onClick={() => setShowPasswordModal(false)}
+            className="p-0 ms-auto text-white"
           >
-            <h4 style={{ textAlign: "center" }}>Đổi mật khẩu</h4>
-
-            {/* Label và Input Mật khẩu cũ */}
-            <div className="mb-3">
-              <label htmlFor="oldPassword" style={{ color: "grey" }}>
-                Mật khẩu cũ
-              </label>
-              <input
-                type="password"
-                id="oldPassword"
-                className="form-control"
-                style={{
-                  marginTop: 20,
-                  backgroundColor: "#2A314E",
-                  border: "1px solid grey",
-                  borderRadius: "8px",
-                  color: "white",
-                }}
-              />
-            </div>
-
-            {/* Label và Input Mật khẩu mới */}
-            <div className="mb-3">
-              <label htmlFor="newPassword" style={{ color: "grey" }}>
-                Mật khẩu mới
-              </label>
-              <input
-                type="password"
-                id="newPassword"
-                className="form-control"
-                style={{
-                  marginTop: 20,
-                  backgroundColor: "#2A314E",
-                  border: "1px solid grey",
-                  borderRadius: "8px",
-                  color: "white",
-                }}
-              />
-            </div>
-
-            {/* Label và Input Nhập lại mật khẩu mới */}
-            <div className="mb-3">
-              <label htmlFor="confirmPassword" style={{ color: "grey" }}>
-                Nhập lại mật khẩu mới
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                className="form-control"
-                style={{
-                  marginTop: 20,
-                  backgroundColor: "#2A314E",
-                  borderRadius: "8px",
-                  color: "white",
-                  border: "1px solid grey",
-                }}
-              />
-            </div>
-
-            <div className="d-flex justify-content-center">
-              <button
-                className="btn"
-                style={{
-                  backgroundColor: "rgb(235, 200, 113)",
-                  color: "#000",
-                  fontWeight: "bold",
-                  marginRight: 10,
-                }}
-                onClick={() => {
-                  // Xử lý đổi mật khẩu ở đây
-                  setShowModal(false);
-                  notify("Đổi mật khẩu thành công!", "success");
-                }}
-              >
-                Đổi mật khẩu
-              </button>
-              <button
-                className="btn btn-secondary me-2"
-                onClick={() => setShowModal(false)}
-              >
-                Hủy
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-
-      {showModalAvatar && (
-        <>
-          {/* Overlay */}
-          <div
-            onClick={() => setShowModalAvatar(false)}
+            <span aria-hidden="true">&times;</span>
+          </Button>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3">
+            <Form.Label className="mp-form-label">Mật khẩu cũ</Form.Label>
+            <Form.Control
+              type="password"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              className="mp-form-control"
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label className="mp-form-label">Mật khẩu mới</Form.Label>
+            <Form.Control
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="mp-form-control"
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label className="mp-form-label">
+              Nhập lại mật khẩu mới
+            </Form.Label>
+            <Form.Control
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="mp-form-control"
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer className="border-0 justify-content-center">
+          <Button
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              backgroundColor: "rgba(19, 23, 39, 0.8)",
-              zIndex: 999,
+              backgroundColor: "rgb(235,200,113)",
+              border: "none",
+              color: "#000",
+              fontWeight: "bold",
             }}
-          />
-
-          {/* Modal */}
-          <div
-            style={{
-              position: "fixed",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              backgroundColor: "rgb(42, 49, 78)",
-              padding: "35px",
-              borderRadius: "12px",
-              zIndex: 1000,
-              width: "90%",
-              maxWidth: "600px",
-              color: "white",
-              display: "flex",
-              flexDirection: "column",
-            }}
+            onClick={handlePasswordChange}
+            className="mp-btn"
           >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <h4 style={{ textAlign: "left", margin: 0 }}>Đổi ảnh đại diện</h4>
-              <button
-                type="button"
-                className="btn-close btn-close-white"
-                onClick={() => setShowModalAvatar(false)}
-                aria-label="Close"
-                style={{ fontSize: "15px" }}
-              ></button>
-            </div>
+            Đổi mật khẩu
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => setShowPasswordModal(false)}
+            className="mp-btn"
+          >
+            Hủy
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))",
-                gap: "10px",
-                marginBottom: "20px",
-                maxHeight: "300px",
-                overflowY: "auto",
-              }}
-            >
-              {avatarList.map((avatar) => (
+      {/* Avatar Selection Modal */}
+      <Modal
+        show={showAvatarModal}
+        onHide={() => setShowAvatarModal(false)}
+        centered
+        size="lg"
+        contentClassName="bg-dark text-white border-0"
+        className="mp-modal"
+      >
+        <Modal.Header className="border-0">
+          <Modal.Title>Đổi ảnh đại diện</Modal.Title>
+          <Button
+            variant="link"
+            onClick={() => setShowAvatarModal(false)}
+            className="p-0 ms-auto text-white"
+          >
+            <span aria-hidden="true">&times;</span>
+          </Button>
+        </Modal.Header>
+        <Modal.Body style={{ maxHeight: "400px", overflowY: "auto" }}>
+          <Row className="g-3">
+            {avatarList.map((avatar, index) => (
+              <Col xs={4} sm={3} md={2} key={index}>
                 <div
-                  key={avatar}
+                  className={`position-relative rounded overflow-hidden mp-avatar-grid-item ${
+                    selectedAvatar === avatar ? "mp-selected" : ""
+                  }`}
                   style={{
-                    borderRadius: "8px",
-                    overflow: "hidden",
                     cursor: "pointer",
-                    position: "relative",
                   }}
-                  onMouseEnter={() => handleAvatarHover(avatar)}
-                  onMouseLeave={handleAvatarMouseLeave}
+                  onMouseEnter={() => setHoveredAvatar(avatar)}
+                  onMouseLeave={() => setHoveredAvatar(null)}
                   onClick={() => handleAvatarSelect(avatar)}
                 >
-                  <img
-                    src={avatar}
-                    alt="avatar option"
+                  <Image
+                    src={avatar || "/placeholder.svg"}
+                    alt="Avatar option"
+                    fluid
                     style={{
-                      display: "block",
-                      width: "100%",
-                      height: "auto",
+                      aspectRatio: "1/1",
                       objectFit: "cover",
+                      transition: "all 0.3s ease",
                       filter:
                         hoveredAvatar === avatar
                           ? "brightness(1.2)"
-                          : "brightness(0.8)",
+                          : "brightness(0.9)",
                     }}
                   />
-                  {selectedAvatar === avatar && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        border: "2px solid #FFD43B",
-                        borderRadius: "8px",
-                        pointerEvents: "none",
-                      }}
-                    />
-                  )}
                 </div>
-              ))}
-            </div>
-
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <button
-                className="btn"
-                style={{
-                  backgroundColor: "rgb(235, 200, 113)",
-                  color: "#000",
-                  fontWeight: "bold",
-                  borderRadius: "8px",
-                  marginRight: 10,
-                }}
-                onClick={handleAvatarSave}
-              >
-                Lưu
-              </button>
-              <button
-                className="btn btn-secondary me-2"
-                onClick={() => setShowModalAvatar(false)}
-              >
-                Đóng
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-
-      <div className="row">
-        {/* Sidebar */}
-        <div
-          className="col-md-3 d-flex flex-column"
-          style={{
-            backgroundColor: "rgb(37, 39, 47)",
-            padding: "30px",
-            borderRadius: "12px 12px 12px 12px",
-          }}
-        >
-          <h4 className="mb-4">Quản lý tài khoản</h4>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            <button
-              className={`btn btn-hover no-border ${
-                activeTab === "favorites" ? "btn-warning" : "btn-secondary"
-              }`}
-              style={{
-                border: "none !important",
-                marginBottom: "10px",
-                textAlign: "left",
-              }}
-              onClick={() => setActiveTab("favorites")}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-              >
-                <path d="M20.205 4.791a5.938 5.938 0 0 0-4.209-1.754A5.906 5.906 0 0 0 12 4.595a5.904 5.904 0 0 0-3.996-1.558 5.942 5.942 0 0 0-4.213 1.758c-2.353 2.363-2.352 6.059.002 8.412L12 21.414l8.207-8.207c2.354-2.353 2.355-6.049-.002-8.416z"></path>
-              </svg>
-              {" Yêu thích"}
-            </button>
-            <button
-              className={`btn btn-hover no-border ${
-                activeTab === "watch-later" ? "btn-warning" : "btn-secondary"
-              }`}
-              style={{
-                border: "none !important",
-                marginBottom: "10px",
-                textAlign: "left",
-              }}
-              onClick={() => setActiveTab("watch-later")}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                style={{ fill: "white" }}
-              >
-                <path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"></path>
-              </svg>
-              {" Xem sau"}
-            </button>
-            <button
-              className={`btn btn-hover no-border ${
-                activeTab === "continue-watching"
-                  ? "btn-warning"
-                  : "btn-secondary"
-              }`}
-              style={{
-                border: "none !important",
-                marginBottom: "10px",
-                textAlign: "left",
-              }}
-              onClick={() => setActiveTab("continue-watching")}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                style={{ fill: "white" }}
-              >
-                <path d="M19.89 10.105a8.696 8.696 0 0 0-.789-1.456l-1.658 1.119a6.606 6.606 0 0 1 .987 2.345 6.659 6.659 0 0 1 0 2.648 6.495 6.495 0 0 1-.384 1.231 6.404 6.404 0 0 1-.603 1.112 6.654 6.654 0 0 1-1.776 1.775 6.606 6.606 0 0 1-2.343.987 6.734 6.734 0 0 1-2.646 0 6.55 6.55 0 0 1-3.317-1.788 6.605 6.605 0 0 1-1.408-2.088 6.613 6.613 0 0 1-.382-1.23 6.627 6.627 0 0 1 .382-3.877A6.551 6.551 0 0 1 7.36 8.797 6.628 6.628 0 0 1 9.446 7.39c.395-.167.81-.296 1.23-.382.107-.022.216-.032.324-.049V10l5-4-5-4v2.938a8.805 8.805 0 0 0-.725.111 8.512 8.512 0 0 0-3.063 1.29A8.566 8.566 0 0 0 4.11 16.77a8.535 8.535 0 0 0 1.835 2.724 8.614 8.614 0 0 0 2.721 1.833 8.55 8.55 0 0 0 5.061.499 8.576 8.576 0 0 0 6.162-5.056c.22-.52.389-1.061.5-1.608a8.643 8.643 0 0 0 0-3.45 8.684 8.684 0 0 0-.499-1.607z"></path>
-              </svg>
-              {" Xem tiếp"}
-            </button>
-            <button
-              className={`btn btn-hover no-border ${
-                activeTab === "account" ? "btn-warning" : "btn-secondary"
-              }`}
-              style={{
-                border: "none !important",
-                marginBottom: "10px",
-                textAlign: "left",
-              }}
-              onClick={() => setActiveTab("account")}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                style={{ fill: "white" }}
-              >
-                <path d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2 7.5 4.019 7.5 6.5zM20 21h1v-1c0-3.859-3.141-7-7-7h-4c-3.86 0-7 3.141-7 7v1h17z"></path>
-              </svg>
-              {" Tài khoản"}
-            </button>
-            <button
-              className="btn btn-secondary btn-hover no-border"
-              style={{ border: "none !important", textAlign: "left" }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                style={{ color: "white" }}
-              >
-                <path d="M16 13v-2H7V8l-5 4 5 4v-3z"></path>
-                <path d="M20 3h-9c-1.103 0-2 .897-2 2v4h2V5h9v14h-9v-4H9v4c0 1.103.897 2 2 2h9c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2z"></path>
-              </svg>
-              {" Đăng xuất"}
-            </button>
-          </ul>
-        </div>
-
-        {/* Main content */}
-        <div className="col-md-9 p-5">
-          {activeTab === "account" && (
-            <>
-              <h3 className="mb-2">Tài khoản</h3>
-              <p style={{ color: "#aaa" }}>Cập nhật thông tin tài khoản</p>
-            </>
-          )}
-          {activeTab === "favorites" && (
-            <>
-              <h3 className="mb-2">Yêu thích</h3>
-              <p style={{ color: "#aaa" }}>Danh sách phim bạn đã yêu thích</p>
-            </>
-          )}
-          {activeTab === "watch-later" && (
-            <>
-              <h3 className="mb-2">Xem sau</h3>
-              <p style={{ color: "#aaa" }}>Danh sách phim bạn muốn xem sau</p>
-            </>
-          )}
-          {activeTab === "continue-watching" && (
-            <>
-              <h3 className="mb-2">Xem tiếp</h3>
-              <p style={{ color: "#aaa" }}>
-                Tiếp tục xem những phim bạn đang xem dở
-              </p>
-            </>
-          )}
-          {renderTabContent()}
-        </div>
-      </div>
+              </Col>
+            ))}
+          </Row>
+        </Modal.Body>
+        <Modal.Footer className="border-0 justify-content-end">
+          <Button
+            style={{
+              backgroundColor: "rgb(235,200,113)",
+              border: "none",
+              color: "#000",
+              fontWeight: "bold",
+            }}
+            onClick={handleAvatarSave}
+            className="mp-btn"
+          >
+            Lưu
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => setShowAvatarModal(false)}
+            className="mp-btn"
+          >
+            Đóng
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
-export default User;

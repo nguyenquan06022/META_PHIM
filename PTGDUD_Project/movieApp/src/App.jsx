@@ -13,7 +13,7 @@ import "@coreui/coreui/dist/css/coreui.min.css";
 import { LoadingProvider } from "./global/LoadingProvider";
 import { LoginProvider } from "./global/LoginProvider";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import User from "./pages/User";
+import UserProfile from "./pages/User";
 import OAuthSuccess from "./pages/OAuthSuccess";
 import Dashboard from "./pages/DashBoard";
 
@@ -47,7 +47,7 @@ function App() {
               <Route path="/signin" element={<SignIn />} />
               <Route path="/infor/:slug" element={<Infor />} />
               <Route path="/watch/:slug" element={<Watch />}></Route>
-              <Route path="/user/:id" element={<User />}></Route>
+              <Route path="/user/:id" element={<UserProfile />}></Route>
               <Route path="/oauth-success" element={<OAuthSuccess />} />
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>

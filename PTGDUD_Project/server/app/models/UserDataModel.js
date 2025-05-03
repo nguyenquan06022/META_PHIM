@@ -19,9 +19,9 @@ const watchContinue = new Schema(
       type: String,
       require: true,
     },
-    linkEp : {
-        type: String,
-        require: true
+    linkEp: {
+      type: String,
+      require: true,
     },
     timeContinue: {
       type: Number,
@@ -68,67 +68,56 @@ const tmdbSchema = new Schema(
 );
 
 const loveFilm = new Schema({
-    category: [
+  category: [
     {
-        id: String,
+      id: String,
       name: String,
-      slug: String
-    }
+      slug: String,
+    },
   ],
   chap: String,
-  imdb: Number,
+  imdb: String,
+  tmdb: tmdbSchema,
   img: String,
   lang: String,
   name: String,
   originName: String,
-  pagination: {
-    totalItems: Number,
-    totalItemsPerPage: Number,
-    currentPage: Number,
-    pageRanges: Number
-  },
   poster_url: String,
   quality: String,
   slug: String,
   time: String,
   year: Number,
   isDeleted: {
-        type: Boolean,
-        default: false
-    }
-})
+    type: Boolean,
+    default: false,
+  },
+});
 
 const watchLater = new Schema({
-    category: [
+  category: [
     {
-        id: String,
+      id: String,
       name: String,
-      slug: String
-    }
+      slug: String,
+    },
   ],
   chap: String,
-  imdb: Number,
+  imdb: String,
+  tmdb: tmdbSchema,
   img: String,
   lang: String,
   name: String,
   originName: String,
-  pagination: {
-    totalItems: Number,
-    totalItemsPerPage: Number,
-    currentPage: Number,
-    pageRanges: Number
-  },
   poster_url: String,
   quality: String,
   slug: String,
   time: String,
   year: Number,
   isDeleted: {
-        type: Boolean,
-        default: false
-    }
-})
-
+    type: Boolean,
+    default: false,
+  },
+});
 
 const UserData = new Schema(
   {
@@ -138,9 +127,11 @@ const UserData = new Schema(
     },
     watchContinues: [watchContinue],
     loveFilms: [loveFilm],
-    watchLaters : [watchLater]
-}, {
-    collection : 'UserDatas'
-});
+    watchLaters: [watchLater],
+  },
+  {
+    collection: "UserDatas",
+  }
+);
 
-module.exports = mongoose.model('UserDatas',UserData)
+module.exports = mongoose.model("UserDatas", UserData);
