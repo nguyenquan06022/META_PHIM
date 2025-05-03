@@ -5,8 +5,8 @@ function router(app) {
   app.post("/handleLoveFilm", userInforControllers.handleLoveFilm);
   app.post("/handleWatchLater", userInforControllers.handleWatchLater);
   app.post("/sign-up", userInforControllers.signUp);
-  app.post("/update-avt", userInforControllers.updateAvt);
-  app.post("/update-pass", userInforControllers.updatePass);
+  app.post("/update-user", userInforControllers.updateUser);
+  app.post("/logout", userInforControllers.logoutUser);
   app.post("/addWatchContinue", userInforControllers.addWatchContinue);
   app.post("/deleteWatchContinue", userInforControllers.deleteWatchContinue);
 }

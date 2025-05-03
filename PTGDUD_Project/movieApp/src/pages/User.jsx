@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { ToastContainer, toast, Flip } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { LoginContext } from "../global/LoginContext";
 import axios from "axios";
 import {
   Container,
@@ -31,7 +32,10 @@ import "../assets/css/userProfile.css"; // Import the dedicated CSS file
 
 export default function UserProfile() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { updateCurUser } = useContext(LoginContext);
   const [userName, setUserName] = useState("quanidol62");
+  const [userForUpdate, setUserForUpdate] = useState({});
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [hoveredAvatar, setHoveredAvatar] = useState(null);
@@ -58,7 +62,6 @@ export default function UserProfile() {
     "/avatar/13.jpg",
   ];
 
-  // Sample movie data with more movies and longer titles
   const favoriteMovies = [
     {
       id: 1,
@@ -279,45 +282,106 @@ export default function UserProfile() {
     },
   ];
 
+  const handleUpdateUser = async (userData) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/update-user",
+        userData,
+        {
+          withCredentials: true, // để gửi cookie nếu bạn dùng session
+        }
+      );
+      if (response.data.success) {
+        console.log("Cập nhật thành công:", response.data.user);
+      } else {
+        console.warn("Không thể cập nhật:", response.data.message);
+      }
+      fetchData();
+      updateCurUser();
+    } catch (error) {
+      console.error("Lỗi khi cập nhật người dùng:", error);
+    }
+  };
+
   const handleAvatarSelect = (avatarPath) => {
+    setUserForUpdate({ ...userForUpdate, avt: avatarPath });
     setSelectedAvatar(avatarPath);
   };
 
   const handleAvatarSave = () => {
-    // In a real application, you would send the selectedAvatar to your backend
+    handleUpdateUser(userForUpdate);
     toast.success("Ảnh đại diện đã được cập nhật!");
     setShowAvatarModal(false);
   };
 
   const handleUpdateProfile = () => {
+    handleUpdateUser(userForUpdate);
     // In a real application, you would send the updated profile to your backend
     toast.success("Cập nhật thành công");
   };
 
+  const handleCloseModal = () => {
+    setShowPasswordModal(false);
+    setOldPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+
   const handlePasswordChange = () => {
-    // Validate passwords
     if (newPassword !== confirmPassword) {
       toast.error("Mật khẩu mới không khớp!");
       return;
+    } else if (oldPassword != user.password) {
+      toast.error("Mật khẩu cũ của bạn không khớp");
+      return;
     }
-
-    // In a real application, you would send the password change request to your backend
-    setShowPasswordModal(false);
+    handleUpdateUser(userForUpdate);
+    handleCloseModal();
     toast.success("Đổi mật khẩu thành công!");
   };
 
-  // Load user info
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await axios.get("http://localhost:3000/getUserInfor", {
-          withCredentials: true,
-        });
-        setUser(res.data);
-      } catch (error) {
-        console.log(error);
-      }
+  async function fetchData() {
+    try {
+      const res = await axios.get("http://localhost:3000/getUserInfor", {
+        withCredentials: true,
+      });
+      setUser(res.data);
+      setUserForUpdate({
+        username: res.data.username,
+        password: res.data.password,
+        avt: res.data.avt,
+        gg_id: "",
+      });
+      //#
+      setUserName(res.data.username);
+      setSelectedAvatar(res.data.avt);
+    } catch (error) {
+      console.log(error);
     }
+  }
+
+  async function handleLogout() {
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.data.success) {
+        console.log("Đăng xuất thành công");
+        updateCurUser();
+        navigate("/login");
+      } else {
+        console.warn(res.data.message);
+      }
+    } catch (err) {
+      console.error("Lỗi khi đăng xuất:", err);
+    }
+  }
+
+  useEffect(() => {
     fetchData();
   }, [id]);
 
@@ -434,24 +498,30 @@ export default function UserProfile() {
               <Row>
                 <Col md={8}>
                   <Form.Group className="mb-3">
-                    <Form.Label className="mp-form-label">Email</Form.Label>
-                    <Form.Control
-                      type="email"
-                      value="nguyenquan06022004@gmail.com"
-                      readOnly
-                      className="mp-form-control"
-                    />
-                  </Form.Group>
-
-                  <Form.Group className="mb-3">
                     <Form.Label className="mp-form-label">
                       Tên hiển thị
                     </Form.Label>
                     <Form.Control
                       type="text"
                       value={userName}
-                      onChange={(e) => setUserName(e.target.value)}
+                      onChange={(e) => {
+                        setUserName(e.target.value);
+                        setUserForUpdate({
+                          ...userForUpdate,
+                          username: e.target.value,
+                        });
+                      }}
                       className="mp-form-control"
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="mp-form-label">Mật khẩu</Form.Label>
+                    <Form.Control
+                      type="password"
+                      value={user ? user.password : ""}
+                      readOnly
+                      className="mp-form-control"
+                      disabled
                     />
                   </Form.Group>
 
@@ -632,6 +702,7 @@ export default function UserProfile() {
                     variant="dark"
                     className="text-start d-flex align-items-center mp-btn"
                     style={{ backgroundColor: "#2A2C39", border: "none" }}
+                    onClick={() => handleLogout()}
                   >
                     <LogOut size={18} className="me-2" />
                     Đăng xuất
@@ -650,7 +721,6 @@ export default function UserProfile() {
       <Modal
         show={showPasswordModal}
         onHide={() => setShowPasswordModal(false)}
-        centered
         contentClassName="bg-dark text-white border-0"
         className="mp-modal"
       >
@@ -658,7 +728,7 @@ export default function UserProfile() {
           <Modal.Title className="text-center w-100">Đổi mật khẩu</Modal.Title>
           <Button
             variant="link"
-            onClick={() => setShowPasswordModal(false)}
+            onClick={() => handleCloseModal()}
             className="p-0 ms-auto text-white"
           >
             <span aria-hidden="true">&times;</span>
@@ -679,7 +749,13 @@ export default function UserProfile() {
             <Form.Control
               type="password"
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={(e) => {
+                setNewPassword(e.target.value);
+                setUserForUpdate({
+                  ...userForUpdate,
+                  password: e.target.value,
+                });
+              }}
               className="mp-form-control"
             />
           </Form.Group>

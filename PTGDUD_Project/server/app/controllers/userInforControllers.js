@@ -79,25 +79,48 @@ class userInforControllers {
       .catch((err) => next(err));
   };
 
-  updateAvt(req, res, next) {
-    let avt = req.query.avt;
-    let id = req.user._id;
-    UserModel.findOneAndUpdate({ _id: id }, { avt: avt })
-      .then((data) => {
-        res.status(200).json({ message: true });
-      })
-      .catch((err) => next(err));
-  }
+  updateUser = (req, res, next) => {
+    if (req.isAuthenticated()) {
+      const id = req.user._id;
+      const newObj = req.body;
 
-  updatePass(req, res, next) {
-    let id = req.user._id;
-    let newPass = req.body.newPassWord;
-    UserModel.findOneAndUpdate({ _id: id }, { password: newPass })
-      .then((data) => {
-        res.status(200).json({ message: true });
+      UserModel.findOneAndUpdate({ _id: id }, newObj, {
+        new: true,
+        runValidators: true,
       })
-      .catch((err) => next(err));
-  }
+        .then((updatedUser) => {
+          res.status(200).json({ success: true, user: updatedUser });
+        })
+        .catch((err) => next(err));
+    } else {
+      res.status(400).json({ success: false, message: "Chưa đăng nhập" });
+    }
+  };
+
+  logoutUser = (req, res) => {
+    if (req.isAuthenticated()) {
+      req.logout((err) => {
+        if (err)
+          return res
+            .status(500)
+            .json({ success: false, message: "Lỗi đăng xuất", error: err });
+
+        req.session.destroy((err) => {
+          if (err)
+            return res.status(500).json({
+              success: false,
+              message: "Không xoá được session",
+              error: err,
+            });
+
+          res.clearCookie("connect.sid");
+          res.status(200).json({ success: true, message: "Đã đăng xuất" });
+        });
+      });
+    } else {
+      res.status(400).json({ success: false, message: "Chưa đăng nhập" });
+    }
+  };
 
   // updateComicHistory(req,res,next) {
   //     let obj = req.body

@@ -242,8 +242,8 @@ body {
 }
 
 .modal-dialog {
+    padding: none !important;
     background-color: rgb(25, 28, 36);
-    padding: 20px;
     color: white;
     border-radius: 10px;
     position: relative;
@@ -301,6 +301,7 @@ body {
 }
 
 .Toastify__toast--info {
+    color: white !important;
     background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
 }
 
@@ -351,10 +352,12 @@ body {
 }
 
 .Toastify__toast--success {
+    color: white !important;
     background: linear-gradient(135deg, #28a745 0%, #218838 100%) !important;
 }
 
 .Toastify__toast--error {
+    color: white !important;
     background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
 }
 
