@@ -21,6 +21,7 @@ const UserModel = new Schema(
     },
   },
   {
+    timestamps: true,
     collection: "Users",
   }
 );

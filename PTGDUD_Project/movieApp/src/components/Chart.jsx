@@ -2,15 +2,46 @@
 
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import Card from "./Card2"
-import { useRef } from "react"
-
-const data = [
-  { name: "Tháng 1", lượtXem: 400 },
-  { name: "Tháng 2", lượtXem: 700 },
-  { name: "Tháng 3", lượtXem: 300 },
-]
+import { useEffect, useMemo, useRef, useState } from "react"
+import axios from "axios"
+import API from "../api/index"
 
 function CustomChart() {
+
+  const [current, setCurrent] = useState([])
+  const [pre, setPre] = useState([])
+  const [suggestMovies, setListSuggestMovies] = useState([])
+
+
+  useEffect(() => {
+    async function fetchData() {
+      const suggestMovies = await API.getTypeMovies("top_movies", 1);
+      setListSuggestMovies(suggestMovies);
+    }
+    fetchData();
+  }, []);
+
+
+  useEffect(() => {
+
+
+    axios.get("http://localhost:3000/getSoLuotXemNgay")
+      .then((response) => {
+        setCurrent(response.data.currentMonth) // không cần map
+        setPre(response.data.lastMonth)
+      })
+  }, [])
+
+  const combinedData = useMemo(() => {
+    const maxLength = Math.max(current.length, pre.length)
+    return Array.from({ length: maxLength }, (_, i) => ({
+      day: i + 1,
+      current: current[i] || 0,
+      previous: pre[i] || 0,
+    }))
+  }, [current, pre])
+
+
   const scrollRef = useRef(null)
 
   const o = {
@@ -130,19 +161,30 @@ function CustomChart() {
       <div className="wrapper me-5" style={chartContainerStyle}>
         <h4 style={{ color: "#e2e8f0", marginBottom: "20px" }}>Lượt xem theo tháng</h4>
         <ResponsiveContainer width="100%" height={250}>
-          <LineChart data={data}>
-            <XAxis dataKey="name" stroke="#9ca3af" />
+          <LineChart data={combinedData}>
+            <XAxis dataKey="day" stroke="#9ca3af" />
             <YAxis stroke="#9ca3af" />
+
             <Line
               type="monotone"
-              dataKey="lượtXem"
+              dataKey="current"
+              name="Tháng này"
               stroke="#8b5cf6"
-              strokeWidth={4}
-              dot={{ r: 4, fill: "#8b5cf6" }}
-              activeDot={{ r: 6, fill: "#8b5cf6" }}
+              strokeWidth={3}
+              dot={{ r: 3 }}
             />
+            <Line
+              type="monotone"
+              dataKey="previous"
+              name="Tháng trước"
+              stroke="#f97316"
+              strokeWidth={3}
+              dot={{ r: 3 }}
+            />
+
             <Tooltip content={<CustomTooltip />} />
           </LineChart>
+
         </ResponsiveContainer>
       </div>
 
@@ -155,21 +197,15 @@ function CustomChart() {
 
         {/* Khung chứa các Card */}
         <div style={cardsContainerStyle}>
-          <h2 style={{ color: "#ffffff", marginBottom: "20px", textAlign: "left", fontSize: "24px" }}>Lead of month</h2>
+          <h2 style={{ color: "#ffffff", marginBottom: "5px", textAlign: "left", fontSize: "24px" }}>Top 5 phim được xem nhiều nhất tháng {new Date().getMonth() + 1}</h2>
 
           <div className="lead-of-month" ref={scrollRef} style={scrollContainerStyle}>
-            <div className="item" style={{ minWidth: 180 }}>
-              <Card movie={o} />
-            </div>
-            <div className="item" style={{ minWidth: 180 }}>
-              <Card movie={o} />
-            </div>
-            <div className="item" style={{ minWidth: 180 }}>
-              <Card movie={o} />
-            </div>
-            <div className="item" style={{ minWidth: 180 }}>
-              <Card movie={o} />
-            </div>
+
+            {suggestMovies.slice(0, 5).map((item, index) => (
+              <div key={index} className="item" style={{ minWidth: 180 }}>
+                <Card movie={item} />
+              </div>
+            ))}
           </div>
         </div>
 

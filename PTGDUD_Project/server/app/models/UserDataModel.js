@@ -126,10 +126,12 @@ const UserData = new Schema(
       required: true,
     },
     watchContinues: [watchContinue],
+    watchContinues: [watchContinue],
     loveFilms: [loveFilm],
     watchLaters: [watchLater],
   },
   {
+    timestamps: true,
     collection: "UserDatas",
   }
 );

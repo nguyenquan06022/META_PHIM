@@ -66,6 +66,8 @@ function Card({ movie }) {
     }
   };
 
+  console.log("Card", movie);
+
   useEffect(() => {
     async function fetchData() {
       const eps = await API.getEps(movie.slug);

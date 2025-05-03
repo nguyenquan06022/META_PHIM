@@ -13,19 +13,10 @@ function Dashboard() {
         <div className='containerr px-5'>
 
             {/* <HeaderSection /> */}
-            <h1 className='my-3' style={{ color: "white" }}>Overview</h1>
+            <h2 className='my-3' style={{ color: "white" }}>Overview</h2>
             <OverviewCard />
             <CustomChart ></CustomChart>
-            <h2 style={{ color: "whitesmoke" }}>Top film</h2>
-            <div className="list-top d-flex flex-column align-items-center">
-
-                <FilmSummary></FilmSummary>
-                <FilmSummary></FilmSummary>
-                <FilmSummary></FilmSummary>
-                <FilmSummary></FilmSummary>
-                <FilmSummary></FilmSummary>
-            </div>
-
+           
         </div>
     );
 }

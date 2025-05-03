@@ -1,26 +1,55 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, Container, Row, Col } from "react-bootstrap"
 import { FaUser, FaEye, FaUsers, FaFilm } from "react-icons/fa"
 
 import axios from "axios"
 
+
+
 function OverviewCard() {
     const [overview, setOverview] = useState(null)
 
     const [countUser, setCountUser] = useState(0)
-    const [category, setCategory] = useState()
-    const [mean, setMean] = useState([])
+    const [category, setCategory] = useState('')
+    const [mean, setMean] = useState(0)
     const [view, setView] = useState(0)
 
     const url = [
         "http://localhost:3000/getTheLoaiYeuThich",
         "http://localhost:3000/getSoLuongTaiKhoan",
-        "http://localhost:3000/overview/mean"
+        "http://localhost:3000/getThoiGianTrungBinh",
+        "http://localhost:3000/getSoLuotXem"
     ]
 
-    
+    const getData = async () => {
+        console.log("Fetching data... da")
+        try {
+            const [res, res1, res2, res3] = await Promise.all([
+                axios.get(url[0], { withCredentials: true }),
+                axios.get(url[1], { withCredentials: true }),
+                axios.get(url[2], { withCredentials: true }),
+                axios.get(url[3], { withCredentials: true })
+            ]);
+
+
+            console.log("Data fetched successfully:", res.data, res1.data, res2.data, res3.data);
+            setCountUser(res1.data.count)
+             setCategory(res.data._id)
+            setMean(Math.round(res2.data.averageTime / 60))
+            setView(res3.data.total)
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+
+    useEffect(() => {
+
+        console.log("Fetching data...");
+         getData()
+    }, [])
 
     // Custom styles for dark theme
     const containerStyle = {
@@ -71,8 +100,8 @@ function OverviewCard() {
                                     <FaUser />
                                 </div>
                                 <h5 style={titleStyle}>Thời gian xem trung bình</h5>
-                                <p style={valueStyle}>{overview?.turnover ? `$${overview.turnover.toLocaleString()}` : ""}</p>
-                                <p style={changeStyle}>+ {overview?.turnoverChange || "0"}% period change</p>
+                                <p style={valueStyle}>{mean} minutes</p>
+                                <p style={changeStyle}>Trung bình mỗi phút/ người dùng</p>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -85,8 +114,8 @@ function OverviewCard() {
                                     <FaEye />
                                 </div>
                                 <h5 style={titleStyle}>Số lượt xem phim</h5>
-                                <p style={valueStyle}>{overview?.profit ? `$${overview.profit.toLocaleString()}` : "    "}</p>
-                                <p style={changeStyle}>+ {overview?.profitChange || "0"}% period change</p>
+                                <p style={valueStyle}>{view}</p>
+                                <p style={changeStyle}>Số lượng xem phim trong tháng {new Date().getMonth() + 1}</p>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -99,8 +128,8 @@ function OverviewCard() {
                                     <FaUsers />
                                 </div>
                                 <h5 style={titleStyle}>Người dùng mới</h5>
-                                <p style={valueStyle}>{overview?.newCustomer || "0"}</p>
-                                <p style={changeStyle}>+ {overview?.newCustomerChange || "0"}% period change</p>
+                                <p style={valueStyle}>{countUser} </p>
+                                <p style={changeStyle}>Số lượng người đăng ký mới trong tháng {new Date().getMonth() + 1}</p>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -113,8 +142,8 @@ function OverviewCard() {
                                     <FaFilm />
                                 </div>
                                 <h5 style={titleStyle}>Thể loại yêu thích</h5>
-                                <p style={valueStyle}>{overview?.favoriteGenre || "Action"}</p>
-                                <p style={changeStyle}>+ {overview?.genreChange || "0"}% period change</p>
+                                <p style={valueStyle}>{category}</p>
+                                <p style={changeStyle}>Thể loại yêu thích</p>
                             </Card.Body>
                         </Card>
                     </Col>
