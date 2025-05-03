@@ -1,97 +1,127 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { FaMedium, FaUser } from 'react-icons/fa6'
-import { BiCategory } from 'react-icons/bi'
+"use client"
+
+import { useState } from "react"
+import { Card, Container, Row, Col } from "react-bootstrap"
+import { FaUser, FaEye, FaUsers, FaFilm } from "react-icons/fa"
+
+import axios from "axios"
 
 function OverviewCard() {
-    const [overview, setOverview] = useState(null);
+    const [overview, setOverview] = useState(null)
 
+    const [countUser, setCountUser] = useState(0)
+    const [category, setCategory] = useState()
+    const [mean, setMean] = useState([])
+    const [view, setView] = useState(0)
+
+    const url = [
+        "http://localhost:3000/getTheLoaiYeuThich",
+        "http://localhost:3000/getSoLuongTaiKhoan",
+        "http://localhost:3000/overview/mean"
+    ]
+
+    
+
+    // Custom styles for dark theme
+    const containerStyle = {
+        backgroundColor: "#14181b",
+        padding: "1.5rem",
+    }
+
+    const cardStyle = {
+        backgroundColor: "#1e2329",
+        borderRadius: "0.75rem",
+        border: "none",
+        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    }
+
+    const titleStyle = {
+        color: "#9ca3af",
+        fontWeight: 500,
+        marginBottom: "0.5rem",
+    }
+
+    const valueStyle = {
+        color: "white",
+        fontSize: "1.875rem",
+        fontWeight: 700,
+    }
+
+    const changeStyle = {
+        color: "#10b981",
+        fontSize: "0.875rem",
+    }
+
+    const iconContainerStyle = {
+        position: "absolute",
+        top: "1rem",
+        right: "1rem",
+        fontSize: "1.5rem",
+    }
 
     return (
-        <div className="container-fluid px-0">
-            <div className="row">
-                <div className="col-md-3 mb-3" >
-                    <div className="card shadow-sm">
+        <div style={containerStyle}>
+            <Container fluid>
+                <Row>
+                    {/* Card 1 - Thời gian xem trung bình */}
+                    <Col md={3} className="mb-3">
+                        <Card style={cardStyle}>
+                            <Card.Body className="position-relative">
+                                <div style={{ ...iconContainerStyle, color: "#6d28d9" }}>
+                                    <FaUser />
+                                </div>
+                                <h5 style={titleStyle}>Thời gian xem trung bình</h5>
+                                <p style={valueStyle}>{overview?.turnover ? `$${overview.turnover.toLocaleString()}` : ""}</p>
+                                <p style={changeStyle}>+ {overview?.turnoverChange || "0"}% period change</p>
+                            </Card.Body>
+                        </Card>
+                    </Col>
 
-                        <div className="card-body position-relative" style={{ backgroundColor: '#fff0f5', borderRadius: '10px' }}>
+                    {/* Card 2 - Số lượt xem phim */}
+                    <Col md={3} className="mb-3">
+                        <Card style={cardStyle}>
+                            <Card.Body className="position-relative">
+                                <div style={{ ...iconContainerStyle, color: "#8b5cf6" }}>
+                                    <FaEye />
+                                </div>
+                                <h5 style={titleStyle}>Số lượt xem phim</h5>
+                                <p style={valueStyle}>{overview?.profit ? `$${overview.profit.toLocaleString()}` : "    "}</p>
+                                <p style={changeStyle}>+ {overview?.profitChange || "0"}% period change</p>
+                            </Card.Body>
+                        </Card>
+                    </Col>
 
-                            {/* Icon ở góc trên bên phải */}
-                            <div
-                                className="position-absolute top-0 end-0 m-3 text-primary"
-                                style={{ fontSize: "24px" }}
-                            >
-                                <FaUser style={{ color: "black" }} />
-                            </div>
+                    {/* Card 3 - Người dùng mới */}
+                    <Col md={3} className="mb-3">
+                        <Card style={cardStyle}>
+                            <Card.Body className="position-relative">
+                                <div style={{ ...iconContainerStyle, color: "#ec4899" }}>
+                                    <FaUsers />
+                                </div>
+                                <h5 style={titleStyle}>Người dùng mới</h5>
+                                <p style={valueStyle}>{overview?.newCustomer || "0"}</p>
+                                <p style={changeStyle}>+ {overview?.newCustomerChange || "0"}% period change</p>
+                            </Card.Body>
+                        </Card>
+                    </Col>
 
-                            <h5 className="card-title text-muted">Thời gian xem trung bình</h5>
-
-                            <p className="card-text fs-3 fw-bold">${overview?.turnover.toLocaleString() || ""}</p>
-                            <p className="text-success small">+ {overview?.turnoverChange || ""}% period change</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-3 mb-3">
-                    <div className="card shadow-sm">
-
-
-                        <div
-                            className="card-body position-relative"
-                            style={{ backgroundColor: "#eff6ff", borderRadius: "10px" }}
-                        >
-                            {/* Icon ở góc trên bên phải */}
-                            <div
-                                className="position-absolute top-0 end-0 m-3 text-primary"
-                                style={{ fontSize: "24px" }}
-                            >
-                                <FaMedium style={{ color: "black" }} />
-                            </div>
-
-                            <h5 className="card-title text-muted">Số lượt xem phim</h5>
-                            <p className="card-text fs-3 fw-bold">
-                                ${overview?.profit.toLocaleString() || ""}
-                            </p>
-                            <p className="text-success small">
-                                + {overview?.profitChange || ""}% period change
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="col-md-3 mb-3">
-                    <div className="card shadow-sm">
-                        <div className="card-body position-relative" style={{ backgroundColor: '#eff6ff', borderRadius: '10px' }}>
-                            <div
-                                className="position-absolute top-0 end-0 m-3 text-primary"
-                                style={{ fontSize: "24px" }}
-                            >
-                                <BiCategory style={{ color: "black" }} />
-                            </div>
-                            <h5 className="card-title text-muted">Người dùng mới</h5>
-                            <p className="card-text fs-3 fw-bold">{overview?.newCustomer || "0"}</p>
-                            <p className="text-success small">+ {overview?.newCustomerChange || ""}% period change</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="col-md-3 mb-3">
-                    <div className="card shadow-sm">
-                        <div className="card-body position-relative" style={{ backgroundColor: '#eff6ff', borderRadius: '10px' }}>
-                            <div
-                                className="position-absolute top-0 end-0 m-3 text-primary"
-                                style={{ fontSize: "24px" }}
-                            >
-                                <BiCategory style={{ color: "black" }} />
-                            </div>
-                            <h5 className="card-title text-muted">Thể loại yếu thích</h5>
-                            <p className="card-text fs-3 fw-bold">{overview?.newCustomer || "0"}</p>
-                            <p className="text-success small">+ {overview?.newCustomerChange || ""}% period change</p>
-                        </div>
-                    </div>
-                </div>
-               
-            </div>
+                    {/* Card 4 - Thể loại yêu thích */}
+                    <Col md={3} className="mb-3">
+                        <Card style={cardStyle}>
+                            <Card.Body className="position-relative">
+                                <div style={{ ...iconContainerStyle, color: "#3b82f6" }}>
+                                    <FaFilm />
+                                </div>
+                                <h5 style={titleStyle}>Thể loại yêu thích</h5>
+                                <p style={valueStyle}>{overview?.favoriteGenre || "Action"}</p>
+                                <p style={changeStyle}>+ {overview?.genreChange || "0"}% period change</p>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
         </div>
-    );
+    )
 }
 
-export default OverviewCard;
+export default OverviewCard

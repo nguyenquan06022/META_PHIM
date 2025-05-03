@@ -1,66 +1,70 @@
 import { ArrowLeft } from "lucide-react";
-import "../assets/css/blog-hero.module.css";
+import "../assets/css/blog-hero.module.scss";
 import avtDev from "/avatar/avtD.png";
 import avtDev2 from "/avatar/me.png";
 
+import styles from "../assets/css/blog-hero.module.scss";
+import classNames from "classnames/bind";
+
 export default function AboutUs() {
+  const cx = classNames.bind(styles);
   return (
-    <div className="blog-page">
+    <div className={cx("blog-page")}>
       {/* Navigation */}
-      <div className="nav-container">
-        <button className="back-button">
+      <div className={cx("nav-container")}>
+        <button className={cx("back-button")}>
           <ArrowLeft size={24} />
         </button>
       </div>
 
       {/* Hero Section */}
-      <div className="hero-section">
+      <div className={cx("hero-section")}>
         {/* Left Background */}
-        <div className="bg-left"></div>
+        <div className={cx("bg-left")}></div>
 
         {/* Right Background */}
-        <div className="bg-right"></div>
+        <div className={cx("bg-right")}></div>
 
         {/* Center Cards Container */}
-        <div className="cards-container">
-          <div className="cards-row">
+        <div className={cx("cards-container")}>
+          <div className={cx("cards-row")}>
             {/* First Team Member Card */}
-            <div className="member-card">
-              <div className="card-body">
-                <div className="card-text">
-                  <h2 className="card-title">
+            <div className={cx("member-card")}>
+              <div className={cx("card-body")}>
+                <div className={cx("card-text")}>
+                  <h2 className={cx("card-title")}>
                     Hi! I Am <br />
                     Developer
                   </h2>
-                  <p className="card-subtitle">Frontend & UI Specialist</p>
+                  <p className={cx("card-subtitle")}>Frontend & UI Specialist</p>
                 </div>
-                <div className="image-container">
-                  <div className="image-bg "></div>
+                <div className={cx("image-container")}>
+                  <div className={cx("image-bg")}></div>
                   <img
                     src={avtDev}
                     alt="Developer 1"
-                    className="profile-image"
+                    className={cx("profile-image")}
                   />
                 </div>
               </div>
             </div>
 
             {/* Second Team Member Card */}
-            <div className="member-card">
-              <div className="card-body">
-                <div className="card-text">
-                  <h2 className="card-title">
+            <div className={cx("member-card")}>
+              <div className={cx("card-body")}>
+                <div className={cx("card-text")}>
+                  <h2 className={cx("card-title")}>
                     Hello! I Am <br />
                     Designer
                   </h2>
-                  <p className="card-subtitle">UX & Graphic Designer</p>
+                  <p className={cx("card-subtitle")}>UX & Graphic Designer</p>
                 </div>
-                <div className="image-container">
-                  <div className="image-bg"></div>
+                <div className={cx("image-container")}>
+                  <div className={cx("image-bg")}></div>
                   <img
                     src={avtDev2}
                     alt="Developer 2"
-                    className="profile-image"
+                    className={cx("profile-image")}
                   />
                 </div>
               </div>
@@ -70,13 +74,13 @@ export default function AboutUs() {
       </div>
 
       {/* Content Section */}
-      <div className="content-section ">
-        <div className="content-container">
-          <p className="content-text" style={{ color: "white" }}>
+      <div className={cx("content-section")}>
+        <div className={cx("content-container")}>
+          <p className={cx("content-text")} style={{ color: "white" }}>
             <strong>QComic</strong> là một sản phẩm nhỏ nhưng khá tâm huyết của
             Quân, là kho truyện đa dạng và được cập nhật liên tục, mọi dữ liệu
             truyện tranh thuộc quyền sở hữu của{" "}
-            <a href="#" className="link">
+            <a href="#" className={cx("link")}>
               Otruyen.cc
             </a>
             . Hi vọng bạn đọc có những giây phút giải trí vui vẻ tại QComic ^_^.

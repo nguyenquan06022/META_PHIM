@@ -31,6 +31,26 @@ function User() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/logout", {
+        withCredentials: true,
+      }).then(() => {
+
+        setUser(null);
+        window.location.href = "/login";
+
+      })
+        .catch((error) => {
+
+        })
+    } catch (error) {
+      console.error("Logout failed:", error);
+      notify("Đăng xuất thất bại", "fail");
+    }
+  };
+
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "favorites":
@@ -439,9 +459,8 @@ function User() {
           <h4 className="mb-4">Quản lý tài khoản</h4>
           <ul style={{ listStyle: "none", padding: 0 }}>
             <button
-              className={`btn btn-hover no-border ${
-                activeTab === "favorites" ? "btn-warning" : "btn-secondary"
-              }`}
+              className={`btn btn-hover no-border ${activeTab === "favorites" ? "btn-warning" : "btn-secondary"
+                }`}
               style={{
                 border: "none !important",
                 marginBottom: "10px",
@@ -460,9 +479,8 @@ function User() {
               {" Yêu thích"}
             </button>
             <button
-              className={`btn btn-hover no-border ${
-                activeTab === "watch-later" ? "btn-warning" : "btn-secondary"
-              }`}
+              className={`btn btn-hover no-border ${activeTab === "watch-later" ? "btn-warning" : "btn-secondary"
+                }`}
               style={{
                 border: "none !important",
                 marginBottom: "10px",
@@ -482,11 +500,10 @@ function User() {
               {" Xem sau"}
             </button>
             <button
-              className={`btn btn-hover no-border ${
-                activeTab === "continue-watching"
-                  ? "btn-warning"
-                  : "btn-secondary"
-              }`}
+              className={`btn btn-hover no-border ${activeTab === "continue-watching"
+                ? "btn-warning"
+                : "btn-secondary"
+                }`}
               style={{
                 border: "none !important",
                 marginBottom: "10px",
@@ -506,9 +523,8 @@ function User() {
               {" Xem tiếp"}
             </button>
             <button
-              className={`btn btn-hover no-border ${
-                activeTab === "account" ? "btn-warning" : "btn-secondary"
-              }`}
+              className={`btn btn-hover no-border ${activeTab === "account" ? "btn-warning" : "btn-secondary"
+                }`}
               style={{
                 border: "none !important",
                 marginBottom: "10px",
@@ -530,6 +546,7 @@ function User() {
             <button
               className="btn btn-secondary btn-hover no-border"
               style={{ border: "none !important", textAlign: "left" }}
+              onClick={handleLogout}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

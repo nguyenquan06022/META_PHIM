@@ -45,7 +45,7 @@ function router(app) {
 
 
 
-    app.get('/getSoLuongPhim', async (req, res, next) => {
+    app.get('/getThoiGianTrungBinh', async (req, res, next) => {
         const result = await model.aggregate([
             {
                 $match: { "watchContinues.timeContinue": { $gt: 0 } }
@@ -68,6 +68,18 @@ function router(app) {
 
 
     })
+
+    app.get('/logout', function (req, res, next) {
+        req.logout(function (err) {
+            if (err) { return next(err); }
+            // Xoá session nếu cần
+            req.session.destroy((err) => {
+                if (err) return next(err);
+                res.clearCookie('connect.sid'); // Tên cookie mặc định của express-session
+                return res.status(200).json({ success: true, message: "Đăng xuất thành công" });
+            });
+        });
+    });
     app.get("/getCurrentUser", userInforControllers.getCurrentUser);
     app.get("/getUserInfor", userInforControllers.showUserInfor);
     app.post("/handleLoveFilm", userInforControllers.handleLoveFilm);
@@ -75,5 +87,7 @@ function router(app) {
     app.post("/sign-up", userInforControllers.signUp);
     app.post("/update-avt", userInforControllers.updateAvt);
     app.post("/update-pass", userInforControllers.updatePass);
+    app.post("/addWatchContinue", userInforControllers.addWatchContinue);
+    app.post("/deleteWatchContinue", userInforControllers.deleteWatchContinue);
 }
 module.exports = router;
