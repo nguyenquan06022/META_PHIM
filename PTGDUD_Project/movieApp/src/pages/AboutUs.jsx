@@ -5,8 +5,12 @@ import { Link } from "react-router-dom";
 import styles from "../assets/css/about-us.module.scss";
 import classNames from "classnames/bind";
 import { FaInstagram, FaFacebook, FaGithub } from "react-icons/fa";
+import ListComment from "../components/ListComment";
+import { useContext } from "react";
+import { LoginContext } from "../global/LoginContext";
 
 export default function AboutUs() {
+  const { user } = useContext(LoginContext);
   const cx = classNames.bind(styles);
   return (
     <div className={cx("about-us-page")}>
@@ -171,6 +175,13 @@ export default function AboutUs() {
                 </div>
               </div>
             </Col>
+          </Row>
+          <br />
+          <Row>
+            <ListComment
+              currentUser={user}
+              link={window.location.href}
+            ></ListComment>
           </Row>
         </Container>
       </div>

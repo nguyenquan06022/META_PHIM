@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
+import { LoginContext } from "../global/LoginContext";
 import API from "../api/index";
 import VideoPlayer from "../components/VideoPlayer";
-import FbComment from "../components/FbComment";
 import ListEp from "../components/ListEp";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "../assets/css/infor.css";
 import LoadingOverlay from "../components/LoadingOverlay";
+import ListComment from "../components/ListComment";
+import ShareModal from "../components/ShareModal";
 import {
   FaPlay,
   FaHeart,
@@ -18,6 +20,9 @@ import {
   FaCheck,
 } from "react-icons/fa";
 function Infor() {
+  const [open, setOpen] = useState(false);
+  const currentUrl = window.location.href;
+  const { user, updateCurUser } = useContext(LoginContext);
   const { slug } = useParams();
   const [movie, setMovie] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
@@ -149,6 +154,7 @@ function Infor() {
       }
     }
     fetchData();
+    updateCurUser();
   }, [slug]);
 
   if (!movie) {
@@ -157,6 +163,11 @@ function Infor() {
 
   return (
     <div>
+      <ShareModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        link={currentUrl}
+      />
       <div className="row" style={{ margin: 0 }}>
         <div className="poster col-12" style={{ padding: 0 }}>
           <img
@@ -427,7 +438,10 @@ function Infor() {
               {" Xem sau"}
             </button>
 
-            <button className="btnInfor btn-hoverInfor">
+            <button
+              className="btnInfor btn-hoverInfor"
+              onClick={() => setOpen(true)}
+            >
               <FaShare />
               {" Chia sẻ"}
             </button>
@@ -461,34 +475,10 @@ function Infor() {
             </div>
           </div>
           <ListEp curEp={movie.episode_current} eps={movie.episodes} />
-          <div id="comments">
-            <div
-              style={{
-                padding: 10,
-                color: "rgb(235, 200, 113)",
-              }}
-            >
-              <h3>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  style={{ fill: "rgb(235, 200, 113)" }}
-                >
-                  <path d="M20 1.999H4c-1.103 0-2 .897-2 2v18l4-4h14c1.103 0 2-.897 2-2v-12c0-1.103-.897-2-2-2zm-6 11H7v-2h7v2zm3-4H7v-2h10v2z"></path>
-                </svg>
-                {" Bình luận"}
-              </h3>
-            </div>
-            <div
-              style={{
-                padding: 10,
-              }}
-            >
-              <FbComment />
-            </div>
-          </div>
+          <ListComment
+            currentUser={user}
+            link={window.location.href}
+          ></ListComment>
         </div>
       </div>
     </div>

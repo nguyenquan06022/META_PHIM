@@ -302,7 +302,13 @@ export default function UserProfile() {
       <Row className="g-3 mp-equal-height-columns">
         {movies.map((movie) => (
           <Col xs={6} sm={4} md={3} key={movie.slug}>
-            <div className="mp-movie-card">
+            <div
+              className="mp-movie-card"
+              onClick={() => {
+                navigate(`/infor/${movie.slug}`);
+              }}
+              style={{ cursor: "pointer" }}
+            >
               <img src={movie.img ? movie.img : movie.image} alt={movie.name} />
               <div className="mp-movie-actions">
                 <button

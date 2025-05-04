@@ -1,14 +1,17 @@
 import { useEffect, useState, useRef, useContext } from "react";
 import ListEp from "../components/ListEp";
-import FbComment from "../components/FbComment";
+import ListComment from "../components/ListComment";
 import { useLocation } from "react-router-dom";
 import LoadingOverlay from "../components/LoadingOverlay";
 import VideoPlayerMain from "../components/VideoPlayerMain";
 import { LoginContext } from "../global/LoginContext";
 import { useNavigate, Link } from "react-router-dom";
+import ShareModal from "../components/ShareModal";
 import "../assets/css/watch.css";
 import API from "../api/index";
 function Watch() {
+  const [open, setOpen] = useState(false);
+  const currentUrl = window.location.href;
   const { user, updateCurUser } = useContext(LoginContext);
   const navigate = useNavigate();
   const useQuery = () => {
@@ -66,23 +69,6 @@ function Watch() {
     }
     fetchData();
   }, [location]);
-  // useEffect(() => {
-  //   updateCurUser();
-  //   if (user && slug) {
-  //     const filtered = user._doc.watchContinues.filter(
-  //       (item) => item.slug == slug
-  //     );
-  //     if (filtered.length > 0 && filtered[0].timeContinue > 0) {
-  //       setCurTime(filtered[0].timeContinue);
-  //       setWatchContinue({
-  //         name: filtered[0].name,
-  //         ep: filtered[0].nameEp,
-  //         timeContinue: filtered[0].timeContinue,
-  //         linkEp: filtered[0].linkEp.replace(/^.*(?=\/watch)/, ""),
-  //       });
-  //     }
-  //   }
-  // }, [slug, location.search]);
 
   useEffect(() => {
     if (user && slug) {
@@ -97,29 +83,12 @@ function Watch() {
           timeContinue: item.timeContinue,
           linkEp: item.linkEp.replace(/^.*(?=\/watch)/, ""),
         });
-        setCurTime(item.timeContinue); // bạn có thể gộp chung nếu cần
+        setCurTime(item.timeContinue);
       } else {
-        setWatchContinue(null); // reset nếu không có dữ liệu
+        setWatchContinue(null);
       }
     }
-  }, [user, slug, location]); // bỏ location.search nếu không cần reload lại theo URL
-
-  // useEffect(() => {
-  //   updateCurUser();
-  //   if (watchContinue) {
-  //     const currentPath = window.location.pathname + window.location.search;
-  //     if (currentPath === watchContinue.linkEp) {
-  //       setShowModal(false);
-  //       setTimeout(() => {
-  //         if (videoRef.current) {
-  //           videoRef.current.currentTime = watchContinue.timeContinue;
-  //         }
-  //       }, 500);
-  //     } else {
-  //       setShowModal(true);
-  //     }
-  //   }
-  // }, [watchContinue]);
+  }, [user, slug, location]);
 
   useEffect(() => {
     if (watchContinue) {
@@ -135,9 +104,8 @@ function Watch() {
         } else {
           setShowModal(true);
         }
-        isFirstLoad.current = false; // đánh dấu không còn là lần đầu
+        isFirstLoad.current = false;
       } else {
-        // Nếu không phải lần đầu, không show modal
         setShowModal(false);
       }
     }
@@ -164,6 +132,11 @@ function Watch() {
   }
   return (
     <div style={{ backgroundColor: "rgb(25, 28, 36)" }}>
+      <ShareModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        link={currentUrl}
+      />
       <div className="video-container" style={{ width: "100%" }}>
         <VideoPlayerMain
           linkVideo={linkVideo}
@@ -185,7 +158,10 @@ function Watch() {
           <button className="btn btn-secondary btn-hover">
             {" Chuyển tập : "} {"off"}
           </button>
-          <button className="btn btn-secondary btn-hover">
+          <button
+            className="btn btn-secondary btn-hover"
+            onClick={() => setOpen(true)}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -256,35 +232,12 @@ function Watch() {
               activeItem={ep}
             />
           </div>
-          <div className="col-12">
-            <div id="comments">
-              <div
-                style={{
-                  padding: 10,
-                  color: "rgb(235, 200, 113)",
-                }}
-              >
-                <h3>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    style={{ fill: "rgb(235, 200, 113)" }}
-                  >
-                    <path d="M20 1.999H4c-1.103 0-2 .897-2 2v18l4-4h14c1.103 0 2-.897 2-2v-12c0-1.103-.897-2-2-2zm-6 11H7v-2h7v2zm3-4H7v-2h10v2z"></path>
-                  </svg>
-                  {" Bình luận"}
-                </h3>
-              </div>
-              <div
-                style={{
-                  padding: 10,
-                }}
-              >
-                <FbComment />
-              </div>
-            </div>
+          <div className="col-md-5"></div>
+          <div className="col-md-7 col-12">
+            <ListComment
+              currentUser={user}
+              link={window.location.href}
+            ></ListComment>
           </div>
         </div>
       </div>

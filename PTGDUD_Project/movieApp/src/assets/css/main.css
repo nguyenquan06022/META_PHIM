@@ -349,6 +349,11 @@ body {
 .Toastify__toast {
     border-radius: 12px !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    z-index: 99999 !important;
+}
+
+.Toastify__toast-container {
+    z-index: 100000 !important;
 }
 
 .Toastify__toast--success {
