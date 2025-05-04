@@ -7,6 +7,7 @@ import PaginationRounded from "../components/PaginationRounded";
 import Skeleton from "@mui/material/Skeleton";
 import { LoadingContext } from "../global/LoadingContext";
 import { useLocation } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 function ListType() {
   const location = useLocation();
   const [title, setTitle] = useState();
@@ -70,6 +71,17 @@ function ListType() {
   }, [params]);
   return (
     <div style={{ padding: "10px 25px 0 25px" }}>
+      <ToastContainer
+        position="top-right" // <-- Vị trí góc trên bên phải
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <Type list={type} />
       <div>
         <div

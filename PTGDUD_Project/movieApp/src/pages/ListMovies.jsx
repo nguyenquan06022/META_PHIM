@@ -7,6 +7,8 @@ import PaginationRounded from "../components/PaginationRounded";
 import Skeleton from "@mui/material/Skeleton";
 import { LoadingContext } from "../global/LoadingContext";
 import { useLocation } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import LoadingOverlay from "../components/LoadingOverlay";
 
 function ListMovies({ title }) {
   const location = useLocation();
@@ -27,7 +29,6 @@ function ListMovies({ title }) {
   const { loading, setLoading } = useContext(LoadingContext);
   const isFirstLoad = useRef(true);
 
-  // khi route thay đổi (mount hoặc back)
   useEffect(() => {
     async function fetchType() {
       setLoading(true);
@@ -85,9 +86,20 @@ function ListMovies({ title }) {
     }
     fetchFiltered();
   }, [params, keyWord, useWhat, setLoading]);
-
   return (
     <div style={{ padding: "10px 25px 0 25px" }}>
+      {loading && <LoadingOverlay />}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <Filter
         activeItem={activeItem}
         state={{ params, setParams }}

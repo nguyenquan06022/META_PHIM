@@ -158,10 +158,11 @@ const ShareModal = ({ link, isOpen, onClose }) => {
             transition: "background-color 0.3s ease, color 0.3s ease",
             marginTop: "10px",
             width: "100%",
+            fontWeight: "bold",
           }}
           onMouseEnter={(e) => {
             e.target.style.backgroundColor = highlightColor;
-            e.target.style.color = "white";
+            e.target.style.color = "black";
           }}
           onMouseLeave={(e) => {
             e.target.style.backgroundColor = "transparent";

@@ -11,6 +11,7 @@ import "../assets/css/infor.css";
 import LoadingOverlay from "../components/LoadingOverlay";
 import ListComment from "../components/ListComment";
 import ShareModal from "../components/ShareModal";
+import { ToastContainer } from "react-toastify";
 import {
   FaPlay,
   FaHeart,
@@ -19,6 +20,7 @@ import {
   FaShare,
   FaCheck,
 } from "react-icons/fa";
+
 function Infor() {
   const [open, setOpen] = useState(false);
   const currentUrl = window.location.href;
@@ -42,7 +44,6 @@ function Infor() {
   };
   const handleLoveFilm = async () => {
     if (!movie) return;
-
     const obj = {
       category:
         movie.category?.map((cat) => ({
@@ -90,7 +91,6 @@ function Infor() {
 
   const handleWatchLater = async () => {
     if (!movie) return;
-
     const obj = {
       category:
         movie.category?.map((cat) => ({
@@ -147,12 +147,38 @@ function Infor() {
     updateCurUser();
   }, [slug]);
 
+  useEffect(() => {
+    if (user) {
+      setIsLiked(
+        user._doc.loveFilms.some(
+          (item) => item.slug == slug && item.isDeleted == false
+        )
+      );
+      setIsWatchLater(
+        user._doc.watchLaters.some(
+          (item) => item.slug == slug && item.isDeleted == false
+        )
+      );
+    }
+  }, []);
+
   if (!movie) {
     return <LoadingOverlay isLoading={movie == null}></LoadingOverlay>;
   }
 
   return (
     <div>
+      <ToastContainer
+        position="top-right" // <-- Vị trí góc trên bên phải
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <ShareModal
         isOpen={open}
         onClose={() => setOpen(false)}

@@ -5,6 +5,7 @@ import API from "../api/index";
 import { useEffect, useState, useContext } from "react";
 import { LoadingContext } from "../global/LoadingContext";
 import { type } from "../global/Type";
+import { ToastContainer } from "react-toastify";
 
 function Home() {
   const { setLoading } = useContext(LoadingContext);
@@ -30,6 +31,17 @@ function Home() {
   }, []);
   return (
     <div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <div>
         <MovieCarousel movies={listVideosDemo} />
       </div>

@@ -3,9 +3,8 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import ScrollTopButton from "../components/ScrollTopButton";
 import logo from "../assets/images/logo.png";
 import { LoginContext } from "../global/LoginContext";
-import { ToastContainer } from "react-toastify";
 function Container() {
-  const { user } = useContext(LoginContext);
+  const { user, updateCurUser } = useContext(LoginContext);
   const [hasOpacity, setHasOpacity] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const location = useLocation();
@@ -16,8 +15,9 @@ function Container() {
   };
 
   useEffect(() => {
+    updateCurUser();
     const handleScroll = () => {
-      setHasOpacity(window.scrollY > 100);
+      setHasOpacity(window.scrollY > 10);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -27,17 +27,6 @@ function Container() {
     <div
       style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
     >
-      <ToastContainer
-        position="top-right" // <-- Vị trí góc trên bên phải
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
       <nav
         ref={navRef}
         className="navbar bg-dark navbar-dark"
@@ -47,7 +36,7 @@ function Container() {
           width: "100%",
           top: 0,
           padding: 10,
-          opacity: hasOpacity ? 0.8 : 1,
+          opacity: hasOpacity ? 0.6 : 1,
           transition: "opacity 0.3s ease-in-out",
         }}
       >
@@ -207,16 +196,7 @@ function Container() {
           ) : (
             <div className="login-btn">
               <Link to="/login" className="nav-link">
-                <button
-                  className="btn btn-warning"
-                  style={{
-                    fontWeight: "bold",
-                    backgroundColor: "rgb(235, 200, 113)",
-                    color: "black",
-                  }}
-                >
-                  Đăng nhập
-                </button>
+                <button className="btn btn-warning-user">Đăng nhập</button>
               </Link>
             </div>
           )}

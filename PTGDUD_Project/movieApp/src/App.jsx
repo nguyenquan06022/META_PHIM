@@ -9,13 +9,14 @@ import Watch from "./pages/watch";
 import ListMovies from "./pages/ListMovies";
 import ListType from "./pages/ListType";
 import { type } from "./global/Type";
-import "@coreui/coreui/dist/css/coreui.min.css";
 import { LoadingProvider } from "./global/LoadingProvider";
 import { LoginProvider } from "./global/LoginProvider";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import UserProfile from "./pages/User";
 import OAuthSuccess from "./pages/OAuthSuccess";
 import Dashboard from "./pages/DashBoard";
+import "@coreui/coreui/dist/css/coreui.min.css";
+import "react-toastify/dist/ReactToastify.css"; // <-- Đặt cuối
 
 function App() {
   return (

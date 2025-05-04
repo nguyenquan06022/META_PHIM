@@ -79,6 +79,7 @@
 .mp-btn-dark:focus {
     background: linear-gradient(135deg, #32344a 0%, #2a2c39 100%) !important;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3) !important;
+    color: white !important;
 }
 
 /* Active tab indicator */

@@ -8,9 +8,6 @@ function Dashboard() {
   return (
     <div className="containerr px-5">
       {/* <HeaderSection /> */}
-      <h2 className="my-3" style={{ color: "white" }}>
-        Overview
-      </h2>
       <OverviewCard />
       <CustomChart></CustomChart>
     </div>

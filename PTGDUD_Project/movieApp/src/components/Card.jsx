@@ -1,12 +1,14 @@
 import { Link } from "react-router-dom";
 import API from "../api/index";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { FaPlay, FaHeart, FaInfoCircle } from "react-icons/fa";
 import { toast } from "react-toastify";
 import axiosInstance from "../global/axiosInstance";
+import { LoginContext } from "../global/LoginContext";
 import "../assets/css/Card.css";
 
 function Card({ movie }) {
+  const { user, updateCurUser } = useContext(LoginContext);
   const [linkFirstVideo, setLinkFirstVideo] = useState("#");
   const [isLiked, setIsLiked] = useState(false);
 
@@ -61,6 +63,7 @@ function Card({ movie }) {
       if (error.response.data.message == "Chưa đăng nhập")
         toast.error("Vui lòng đăng nhập để thực hiện hành động");
     }
+    updateCurUser();
   };
 
   useEffect(() => {
@@ -73,6 +76,16 @@ function Card({ movie }) {
     }
     fetchData();
   }, [movie]);
+
+  useEffect(() => {
+    if (user) {
+      setIsLiked(
+        user._doc.loveFilms.some(
+          (item) => item.slug == movie.slug && item.isDeleted == false
+        )
+      );
+    }
+  }, []);
 
   const fixMoreThanOneDecimalPlace = (num) => {
     let decimalPart = num.toString().split(".")[1];

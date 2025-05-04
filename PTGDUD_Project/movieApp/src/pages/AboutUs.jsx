@@ -114,14 +114,28 @@ export default function AboutUs() {
           <Row className={cx("justify-content-center")}>
             <Col md={10} lg={8}>
               <div className={cx("text-center")}>
-                <span className={cx("about-badge", "mb-3", "d-inline-block")}>
+                <span
+                  className={cx("about-badge", "mb-3", "d-inline-block")}
+                  style={{
+                    background:
+                      "linear-gradient(135deg, rgb(235, 200, 113) 0%, rgb(255, 183, 82) 100%)",
+                    border: "none",
+                    color: "#000",
+                    fontWeight: 600,
+                    boxShadow: "0 4px 12px rgba(235, 200, 113, 0.3)",
+                  }}
+                >
                   About META PHIM
                 </span>
                 <p className={cx("content-text")}>
                   <strong>META PHIM</strong> là một sản phẩm nhỏ nhưng đầy tâm
                   huyết của Quân, là kho phim đa dạng và được cập nhật liên tục.
                   Mọi dữ liệu phim thuộc quyền sở hữu của{" "}
-                  <a href="https://ophim17.cc/" className={cx("custom-link")}>
+                  <a
+                    href="https://ophim17.cc/"
+                    className={cx("custom-link")}
+                    style={{ color: "rgb(235, 200, 113)" }}
+                  >
                     ophim17.cc
                   </a>
                   . Hi vọng bạn xem có những giây phút giải trí thật tuyệt vời

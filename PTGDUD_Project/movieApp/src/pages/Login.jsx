@@ -4,6 +4,7 @@ import { LoginContext } from "../global/LoginContext";
 import { Link } from "react-router-dom";
 import axiosInstance from "../global/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 
 function Login() {
   const { updateCurUser } = useContext(LoginContext);
@@ -55,15 +56,40 @@ function Login() {
         alignItems: "center",
       }}
     >
+      <ToastContainer
+        position="top-right" // <-- Vị trí góc trên bên phải
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <div
         style={{
-          backgroundColor: "rgb(47, 52, 71)",
-          padding: 30,
+          backgroundColor: "rgb(28, 29, 38)",
+          padding: 40,
           borderRadius: "7px",
         }}
       >
-        <h3 style={{ color: "white" }}>Đăng nhập</h3>
-        <p style={{ color: "white" }}>
+        <h3
+          style={{
+            background:
+              "linear-gradient(to right, #fff, rgba(235, 200, 113, 0.8))",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontWeight: 700,
+          }}
+        >
+          Đăng nhập
+        </h3>
+        <p
+          style={{
+            color: "rgba(255, 255, 255, 0.6)",
+          }}
+        >
           Nếu bạn chưa có tài khoản,
           <span>
             <Link
@@ -88,7 +114,11 @@ function Login() {
           <label
             htmlFor="name"
             className="form-label"
-            style={{ color: "white" }}
+            style={{
+              color: "rgba(255, 255, 255, 0.7)",
+              fontWeight: 500,
+              marginBottom: "8px",
+            }}
           >
             Tên tài khoản
           </label>
@@ -98,6 +128,11 @@ function Login() {
             id="name"
             name="name"
             value={name}
+            style={{
+              backgroundColor: "rgb(40, 40, 49)",
+              color: "white",
+              border: "none",
+            }}
             onChange={(e) => setName(e.target.value)}
           />
         </div>
@@ -106,7 +141,11 @@ function Login() {
           <label
             htmlFor="pwd"
             className="form-label"
-            style={{ color: "white" }}
+            style={{
+              color: "rgba(255, 255, 255, 0.7)",
+              fontWeight: 500,
+              marginBottom: "8px",
+            }}
           >
             Mật khẩu
           </label>
@@ -116,12 +155,17 @@ function Login() {
             id="pwd"
             name="pwd"
             value={pwd}
+            style={{
+              backgroundColor: "rgb(40, 40, 49)",
+              color: "white",
+              border: "none",
+            }}
             onChange={(e) => setPwd(e.target.value)}
           />
         </div>
 
         <button
-          className="btn btn-warning mb-3"
+          className="btn btn-warning-user mb-3"
           style={{
             backgroundColor: "rgb(235, 200, 113)",
             fontWeight: "bold",
@@ -131,27 +175,6 @@ function Login() {
         >
           Đăng nhập
         </button>
-
-        {/* <button
-          className="btn btn-secondary d-flex"
-          style={{
-            width: "100%",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onClick={handleGoogleLogin}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            style={{ fill: "white" }}
-          >
-            <path d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 0 1-5.279-5.28 5.27 5.27 0 0 1 5.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 0 0-8.934 8.934 8.907 8.907 0 0 0 8.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z"></path>
-          </svg>
-          Đăng nhập bằng Google
-        </button> */}
       </div>
     </div>
   );

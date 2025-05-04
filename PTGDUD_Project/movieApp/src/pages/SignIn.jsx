@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import loginBg from "../assets/images/login_bg.jpg";
 import { Link } from "react-router-dom";
@@ -52,16 +52,40 @@ function SignIn() {
         alignItems: "center",
       }}
     >
-      <ToastContainer />
+      <ToastContainer
+        position="top-right" // <-- Vị trí góc trên bên phải
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <div
         style={{
-          backgroundColor: "rgb(47, 52, 71)",
-          padding: 30,
+          backgroundColor: "rgb(28, 29, 38)",
+          padding: 40,
           borderRadius: "7px",
         }}
       >
-        <h3 style={{ color: "white" }}>Đăng ký</h3>
-        <p style={{ color: "white" }}>
+        <h3
+          style={{
+            background:
+              "linear-gradient(to right, #fff, rgba(235, 200, 113, 0.8))",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontWeight: 700,
+          }}
+        >
+          Đăng ký
+        </h3>
+        <p
+          style={{
+            color: "rgba(255, 255, 255, 0.6)",
+          }}
+        >
           Nếu bạn đã có tài khoản hãy
           <span>
             <Link
@@ -76,7 +100,11 @@ function SignIn() {
           <label
             htmlFor="name"
             className="form-label"
-            style={{ color: "white" }}
+            style={{
+              color: "rgba(255, 255, 255, 0.7)",
+              fontWeight: 500,
+              marginBottom: "8px",
+            }}
           >
             Tên tài khoản
           </label>
@@ -86,6 +114,11 @@ function SignIn() {
             id="name"
             name="name"
             value={name}
+            style={{
+              backgroundColor: "rgb(40, 40, 49)",
+              color: "white",
+              border: "none",
+            }}
             onChange={(e) => setName(e.target.value)}
           />
         </div>
@@ -93,7 +126,11 @@ function SignIn() {
           <label
             htmlFor="pwd"
             className="form-label"
-            style={{ color: "white" }}
+            style={{
+              color: "rgba(255, 255, 255, 0.7)",
+              fontWeight: 500,
+              marginBottom: "8px",
+            }}
           >
             Mật khẩu
           </label>
@@ -103,6 +140,11 @@ function SignIn() {
             id="pwd"
             name="pwd"
             value={pwd}
+            style={{
+              backgroundColor: "rgb(40, 40, 49)",
+              color: "white",
+              border: "none",
+            }}
             onChange={(e) => setPwd(e.target.value)}
           />
         </div>
@@ -110,7 +152,11 @@ function SignIn() {
           <label
             htmlFor="rePwd"
             className="form-label"
-            style={{ color: "white" }}
+            style={{
+              color: "rgba(255, 255, 255, 0.7)",
+              fontWeight: 500,
+              marginBottom: "8px",
+            }}
           >
             Nhập lại mật khẩu
           </label>
@@ -120,11 +166,16 @@ function SignIn() {
             id="rePwd"
             name="rePwd"
             value={rePwd}
+            style={{
+              backgroundColor: "rgb(40, 40, 49)",
+              color: "white",
+              border: "none",
+            }}
             onChange={(e) => setRePwd(e.target.value)}
           />
         </div>
         <button
-          className="btn btn-warning mb-3"
+          className="btn btn-warning-user mb-3"
           style={{
             backgroundColor: "rgb(235, 200, 113)",
             fontWeight: "bold",
