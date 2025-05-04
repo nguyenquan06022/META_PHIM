@@ -3,7 +3,6 @@ const Comments = require("../models/CommentModel");
 class CommentsControllers {
   getCommentsByLink(req, res, next) {
     const link = req.query.link;
-    console.log(link);
     Comments.findOne({ link: link })
       .then((data) => {
         if (!data) {
@@ -27,14 +26,15 @@ class CommentsControllers {
   }
 
   addComment(req, res, next) {
-    const { link, account_id, avt, content } = req.body;
+    const { link, account_id, avt, content, username } = req.body;
 
-    if (!link || !account_id || !avt || !content) {
+    if (!link || !account_id || !avt || !content || !username) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     const newComment = {
       account_id,
+      username,
       avt,
       content,
       createdAt: new Date(),
@@ -63,9 +63,9 @@ class CommentsControllers {
   }
 
   editComment = (req, res, next) => {
-    const { link, account_id, comment_id, content } = req.body;
+    const { link, account_id, comment_id, content, username } = req.body;
 
-    if (!link || !account_id || !comment_id || !content) {
+    if (!link || !account_id || !comment_id || !content || !username) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -118,12 +118,10 @@ class CommentsControllers {
             comment.id === comment_id && comment.account_id === account_id
         );
         if (!comment) {
-          return res
-            .status(404)
-            .json({
-              message:
-                "Comment not found or you are not authorized to delete this comment",
-            });
+          return res.status(404).json({
+            message:
+              "Comment not found or you are not authorized to delete this comment",
+          });
         }
         comment.isDelete = true;
         return doc.save();

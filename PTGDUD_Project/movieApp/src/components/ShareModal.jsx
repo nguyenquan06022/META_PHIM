@@ -139,7 +139,7 @@ const ShareModal = ({ link, isOpen, onClose }) => {
               gap: "8px",
               width: "100%",
             }}
-            onMouseEnter={(e) => (e.target.style.transform = "scale(1.05)")}
+            onMouseEnter={(e) => (e.target.style.transform = "scale(1.05).")}
             onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
           >
             🔗 Sao chép liên kết
@@ -155,14 +155,18 @@ const ShareModal = ({ link, isOpen, onClose }) => {
             borderRadius: "6px",
             color: highlightColor,
             cursor: "pointer",
-            transition: "background-color 0.3s ease",
+            transition: "background-color 0.3s ease, color 0.3s ease",
             marginTop: "10px",
             width: "100%",
           }}
-          onMouseEnter={(e) =>
-            (e.target.style.backgroundColor = highlightColor)
-          }
-          onMouseLeave={(e) => (e.target.style.backgroundColor = "transparent")}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = highlightColor;
+            e.target.style.color = "white";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = "transparent";
+            e.target.style.color = highlightColor;
+          }}
         >
           Đóng
         </button>

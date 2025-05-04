@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, Container, Row, Col } from "react-bootstrap";
 import { FaUser, FaEye, FaUsers, FaFilm } from "react-icons/fa";
-
-import axios from "axios";
+import axiosInstance from "../global/axiosInstance";
 
 function OverviewCard() {
   const [overview, setOverview] = useState(null);
@@ -14,29 +13,20 @@ function OverviewCard() {
   const [view, setView] = useState(0);
 
   const url = [
-    "http://localhost:3000/getTheLoaiYeuThich",
-    "http://localhost:3000/getSoLuongTaiKhoan",
-    "http://localhost:3000/getThoiGianTrungBinh",
-    "http://localhost:3000/getSoLuotXem",
+    "/getTheLoaiYeuThich",
+    "/getSoLuongTaiKhoan",
+    "/getThoiGianTrungBinh",
+    "/getSoLuotXem",
   ];
 
   const getData = async () => {
-    console.log("Fetching data... da");
     try {
       const [res, res1, res2, res3] = await Promise.all([
-        axios.get(url[0], { withCredentials: true }),
-        axios.get(url[1], { withCredentials: true }),
-        axios.get(url[2], { withCredentials: true }),
-        axios.get(url[3], { withCredentials: true }),
+        axiosInstance.get(url[0], { withCredentials: true }),
+        axiosInstance.get(url[1], { withCredentials: true }),
+        axiosInstance.get(url[2], { withCredentials: true }),
+        axiosInstance.get(url[3], { withCredentials: true }),
       ]);
-
-      console.log(
-        "Data fetched successfully:",
-        res.data,
-        res1.data,
-        res2.data,
-        res3.data
-      );
       setCountUser(res1.data.count);
       setCategory(res.data._id);
       setMean(Math.round(res2.data.averageTime / 60));
@@ -47,7 +37,6 @@ function OverviewCard() {
   };
 
   useEffect(() => {
-    console.log("Fetching data...");
     getData();
   }, []);
 

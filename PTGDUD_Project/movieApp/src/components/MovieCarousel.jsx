@@ -14,7 +14,7 @@ import {
   FaChevronRight,
   FaTimes,
 } from "react-icons/fa";
-import axios from "axios";
+import axiosInstance from "../global/axiosInstance";
 
 const MovieCarousel = ({ movies }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -122,14 +122,9 @@ const MovieCarousel = ({ movies }) => {
     };
 
     try {
-      const res = await axios.post(
-        "http://localhost:3000/handleLoveFilm",
-        obj,
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(res);
+      const res = await axiosInstance.post("/handleLoveFilm", obj, {
+        withCredentials: true,
+      });
       if (res.data.message == "Đã bỏ thích") {
         toast.info("Đã bỏ thích");
       } else if (

@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
 import Hls from "hls.js";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../global/axiosInstance";
 import { LoginContext } from "../global/LoginContext";
 import {
   Play,
@@ -253,22 +253,6 @@ const VideoPlayerMain = React.forwardRef(function VideoPlayerMain(
   }, [hlsUrl]);
 
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (videoRef.current) {
-        const video = videoRef.current;
-        const current = formatTime(video.currentTime);
-        const duration = formatTime(video.duration);
-        console.log(`⏱ Đang xem: ${current} / ⏳ Tổng thời lượng: ${duration}`);
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [videoRef]);
-
-  useEffect(() => {
     const style = document.createElement("style");
     style.textContent = `
       /* Custom styles for the video player */
@@ -353,8 +337,8 @@ const VideoPlayerMain = React.forwardRef(function VideoPlayerMain(
         time: movie.time,
       };
       if (timeContinue != 0) {
-        axios
-          .post("http://localhost:3000/addWatchContinue", objWatchContinue, {
+        axiosInstance
+          .post("/addWatchContinue", objWatchContinue, {
             withCredentials: true,
           })
           .then((res) => {

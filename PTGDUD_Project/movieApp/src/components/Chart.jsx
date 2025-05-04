@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import Card from "./Card2";
 import { useEffect, useMemo, useRef, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../global/axiosInstance";
 import API from "../api/index";
 
 function CustomChart() {
@@ -27,8 +27,8 @@ function CustomChart() {
   }, []);
 
   useEffect(() => {
-    axios.get("http://localhost:3000/getSoLuotXemNgay").then((response) => {
-      setCurrent(response.data.currentMonth); // không cần map
+    axiosInstance.get("/getSoLuotXemNgay").then((response) => {
+      setCurrent(response.data.currentMonth);
       setPre(response.data.lastMonth);
     });
   }, []);

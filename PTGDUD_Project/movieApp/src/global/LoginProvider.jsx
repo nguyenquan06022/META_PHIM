@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { LoginContext } from "./LoginContext";
-import axios from "axios";
+import axiosInstance from "../global/axiosInstance";
 
 export const LoginProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const updateCurUser = () => {
-    axios
-      .get("http://localhost:3000/getCurrentUser", { withCredentials: true })
+    axiosInstance
+      .get("/getCurrentUser", { withCredentials: true })
       .then((res) => {
         setUser(res.data);
       })

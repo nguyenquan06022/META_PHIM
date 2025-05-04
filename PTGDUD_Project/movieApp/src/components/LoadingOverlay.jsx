@@ -14,7 +14,7 @@ export default function LoadingOverlay({ isLoading = true, onComplete }) {
     if (!isLoading && onComplete) {
       const timer = setTimeout(() => {
         onComplete();
-      }, 1000); // Allow exit animation to complete
+      }, 1000);
 
       return () => clearTimeout(timer);
     }

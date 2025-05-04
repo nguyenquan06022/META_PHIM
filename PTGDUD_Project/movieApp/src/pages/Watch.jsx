@@ -24,7 +24,6 @@ function Watch() {
     });
 
     if (!server) {
-      console.log("Không tìm thấy server phù hợp.");
       return null;
     }
     const episode = server.server_data.find(
@@ -32,7 +31,6 @@ function Watch() {
     );
 
     if (!episode) {
-      console.log("Không tìm thấy tập phù hợp.");
       return null;
     }
     return episode.link_m3u8;

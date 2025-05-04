@@ -3,7 +3,7 @@ import API from "../api/index";
 import { useEffect, useState } from "react";
 import { FaPlay, FaHeart, FaInfoCircle } from "react-icons/fa";
 import { toast } from "react-toastify";
-import axios from "axios";
+import axiosInstance from "../global/axiosInstance";
 import "../assets/css/Card.css";
 
 function Card({ movie }) {
@@ -46,13 +46,9 @@ function Card({ movie }) {
     };
 
     try {
-      const res = await axios.post(
-        "http://localhost:3000/handleLoveFilm",
-        obj,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axiosInstance.post("/handleLoveFilm", obj, {
+        withCredentials: true,
+      });
       if (res.data.message == "Đã bỏ thích") {
         toast.info("Đã bỏ thích");
       } else if (

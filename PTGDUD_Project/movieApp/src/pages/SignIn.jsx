@@ -4,7 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import loginBg from "../assets/images/login_bg.jpg";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../global/axiosInstance";
 
 function SignIn() {
   const [name, setName] = useState("");
@@ -24,7 +24,7 @@ function SignIn() {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/sign-up", {
+      const response = await axiosInstance.post("/sign-up", {
         username: name,
         pwd: pwd,
       });

@@ -1,5 +1,4 @@
 const UserModel = require("../models/UserModel");
-const UserData = require("../models/UserDataModel");
 const UserDataModel = require("../models/UserDataModel");
 
 class userInforControllers {
@@ -55,7 +54,7 @@ class userInforControllers {
           newUser
             .save()
             .then((savedUser) => {
-              const newUserData = new UserData({
+              const newUserData = new UserDataModel({
                 accout_ID: savedUser._id,
                 watchContinues: [],
                 loveFilms: [],
@@ -330,15 +329,15 @@ class userInforControllers {
 
   getTheLoaiYeuThich = async (req, res, next) => {
     const data = await UserDataModel.aggregate([
-      { $unwind: "$loveFilms" }, // bóc từng phần tử loveFilms
-      { $unwind: "$loveFilms.category" }, // bóc từng category trong mỗi loveFilm
+      { $unwind: "$loveFilms" },
+      { $unwind: "$loveFilms.category" },
       {
         $group: {
-          _id: "$loveFilms.category.name", // group theo tên thể loại
-          count: { $sum: 1 }, // đếm số lần thể loại xuất hiện
+          _id: "$loveFilms.category.name",
+          count: { $sum: 1 },
         },
       },
-      { $sort: { count: -1 } }, // sắp xếp giảm dần theo số lượng
+      { $sort: { count: -1 } },
     ]);
 
     if (!data)
@@ -346,7 +345,6 @@ class userInforControllers {
         .status(500)
         .json({ success: false, message: "Không tìm thấy tài khoản" });
     else {
-      console.log("day la the loai  duoc yeu thic nhat", data[0]);
       res.status(200).json(data[0]);
     }
   };
@@ -355,13 +353,11 @@ class userInforControllers {
     const now = new Date();
     const users = await UserModel.find({
       createdAt: {
-        $gte: new Date(now.getFullYear(), now.getMonth(), 1), // Đầu tháng
-        $lt: new Date(now.getFullYear(), now.getMonth() + 1, 1), // Đầu tháng sau
+        $gte: new Date(now.getFullYear(), now.getMonth(), 1),
+        $lt: new Date(now.getFullYear(), now.getMonth() + 1, 1),
       },
     });
-    const count = users.length; // Đếm số lượng tài khoản trong tháng này
-    console.log("day la so luong tai khoan ", count);
-
+    const count = users.length;
     res.status(200).json({ success: true, count: count });
   };
 
@@ -373,7 +369,6 @@ class userInforControllers {
       {
         $match: {
           "watchContinues.timeContinue": { $gt: 0 },
-          // Thời gian nằm trong tháng hiện tại
           "watchContinues.createdAt": {
             $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
             $lt: new Date(
@@ -398,12 +393,9 @@ class userInforControllers {
         },
       },
     ]);
-
-    console.log("day la thoi gian trung binh", result);
-
     return res.status(200).json({
       success: true,
-      averageTime: result.length > 0 ? result[0].averageTime : 0, // Nếu không có kết quả thì trả về 0
+      averageTime: result.length > 0 ? result[0].averageTime : 0,
     });
   };
 
@@ -431,30 +423,21 @@ class userInforControllers {
         },
       },
     ]);
-
-    console.log("day la so luot xem", soluong[0].total);
     return res.status(200).json({
       success: true,
-      total: soluong[0].total, // Nếu không có kết quả thì trả về 0
+      total: soluong[0].total,
     });
   };
 
   getSoLuotXemNgay = async (req, res, next) => {
     const nam = new Date().getFullYear();
-    const thang = new Date().getMonth() + 1; // Tháng hiện tại (0-11) => (1-12)
-
-    var soNgay = getLastDayOfMonth(nam, thang); // Thay đổi tháng và năm ở đây
-    var soNgayThangTruoc = getLastDayOfMonth(nam, thang - 1); // Thay đổi tháng và năm ở đây
-
-    console.log("day la so luot xem trong thang nay", thang);
-    console.log("day la so luot xem trong thang nay", nam);
-
-    var arrCurrent = new Array(soNgay).fill(0); // Tạo mảng với số ngày của tháng hiện tại
-    var arrPre = new Array(soNgayThangTruoc).fill(0); // Tạo mảng với số ngày của tháng trước
-
+    const thang = new Date().getMonth() + 1;
+    var soNgay = getLastDayOfMonth(nam, thang);
+    var soNgayThangTruoc = getLastDayOfMonth(nam, thang - 1);
+    var arrCurrent = new Array(soNgay).fill(0);
+    var arrPre = new Array(soNgayThangTruoc).fill(0);
     for (let i = 1; i <= soNgay; i++) {
-      var date = new Date(nam, thang - 1, i + 1); // Tạo ngày từ 1 đến số ngày của tháng hiện tại
-      // console.log('day la so luot xem trong thang nsdfsdfsdfsdfsday', date)
+      var date = new Date(nam, thang - 1, i + 1);
       var rs = await UserDataModel.aggregate([
         {
           $unwind: "$watchContinues",
@@ -469,7 +452,7 @@ class userInforControllers {
                     date: "$watchContinues.createdAt",
                   },
                 },
-                date.toISOString().split("T")[0], // Chuyển đổi ngày thành chuỗi định dạng YYYY-MM-DD
+                date.toISOString().split("T")[0],
               ],
             },
           },
@@ -482,13 +465,11 @@ class userInforControllers {
         },
       ]);
 
-      arrCurrent[i - 1] = rs.length > 0 ? rs[0].total : 0; // Nếu không có kết quả thì trả về 0
+      arrCurrent[i - 1] = rs.length > 0 ? rs[0].total : 0;
     }
 
     for (let i = 1; i <= soNgay; i++) {
-      console.log("day la so luot xem trong thang nay", thang - 2);
-      var date2 = new Date(nam, thang - 2, i + 1); // Tạo ngày từ 1 đến số ngày của tháng hiện tại
-      console.log("day la date 2", date2);
+      var date2 = new Date(nam, thang - 2, i + 1);
       var rs = await UserDataModel.aggregate([
         {
           $unwind: "$watchContinues",
@@ -503,7 +484,7 @@ class userInforControllers {
                     date: "$watchContinues.createdAt",
                   },
                 },
-                date2.toISOString().split("T")[0], // Chuyển đổi ngày thành chuỗi định dạng YYYY-MM-DD
+                date2.toISOString().split("T")[0],
               ],
             },
           },
@@ -515,14 +496,13 @@ class userInforControllers {
           },
         },
       ]);
-
-      arrPre[i - 1] = rs.length > 0 ? rs[0].total : 0; // Nếu không có kết quả thì trả về 0
+      arrPre[i - 1] = rs.length > 0 ? rs[0].total : 0;
     }
 
     return res.status(200).json({
       success: true,
-      currentMonth: arrCurrent, // Nếu không có kết quả thì trả về 0
-      lastMonth: arrPre, // Nếu không có kết quả thì trả về 0
+      currentMonth: arrCurrent,
+      lastMonth: arrPre,
     });
   };
 }

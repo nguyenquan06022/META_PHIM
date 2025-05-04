@@ -1,11 +1,10 @@
-"use client";
 import API from "../api/index";
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ToastContainer, toast, Flip } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LoginContext } from "../global/LoginContext";
-import axios from "axios";
+import axiosInstance from "../global/axiosInstance";
 import {
   Container,
   Row,
@@ -28,13 +27,13 @@ import {
   X,
   Info,
 } from "lucide-react";
-import "../assets/css/userProfile.css"; // Import the dedicated CSS file
+import "../assets/css/userProfile.css";
 
 export default function UserProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { updateCurUser } = useContext(LoginContext);
-  const [userName, setUserName] = useState("quanidol62");
+  const [userName, setUserName] = useState("");
   const [userForUpdate, setUserForUpdate] = useState({});
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
@@ -67,13 +66,9 @@ export default function UserProfile() {
 
   const handleUpdateUser = async (userData) => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/update-user",
-        userData,
-        {
-          withCredentials: true, // để gửi cookie nếu bạn dùng session
-        }
-      );
+      const response = await axiosInstance.post("/update-user", userData, {
+        withCredentials: true, // để gửi cookie nếu bạn dùng session
+      });
       if (response.data.success) {
         console.log("Cập nhật thành công:", response.data.user);
       } else {
@@ -99,7 +94,6 @@ export default function UserProfile() {
 
   const handleUpdateProfile = () => {
     handleUpdateUser(userForUpdate);
-    // In a real application, you would send the updated profile to your backend
     toast.success("Cập nhật thành công");
   };
 
@@ -162,13 +156,9 @@ export default function UserProfile() {
     };
 
     try {
-      const res = await axios.post(
-        "http://localhost:3000/handleLoveFilm",
-        obj,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axiosInstance.post("/handleLoveFilm", obj, {
+        withCredentials: true,
+      });
       if (res.data.message == "Đã bỏ thích") {
         toast.info("Đã bỏ thích");
       } else if (
@@ -214,14 +204,9 @@ export default function UserProfile() {
     };
 
     try {
-      const res = await axios.post(
-        "http://localhost:3000/handleWatchLater",
-        obj,
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(res);
+      const res = await axiosInstance.post("/handleWatchLater", obj, {
+        withCredentials: true,
+      });
       if (res.data.message === "Đã xóa khỏi danh sách xem sau") {
         toast.info("Đã xóa khỏi danh sách xem sau");
       } else if (res.data.message === "Thêm vào danh sách xem sau thành công") {
@@ -246,7 +231,7 @@ export default function UserProfile() {
 
   async function fetchData() {
     try {
-      const res = await axios.get("http://localhost:3000/getUserInfor", {
+      const res = await axiosInstance.get("/getUserInfor", {
         withCredentials: true,
       });
       setUser(res.data);
@@ -274,15 +259,14 @@ export default function UserProfile() {
 
   async function handleLogout() {
     try {
-      const res = await axios.post(
-        "http://localhost:3000/logout",
+      const res = await axiosInstance.post(
+        "/logout",
         {},
         {
           withCredentials: true,
         }
       );
       if (res.data.success) {
-        console.log("Đăng xuất thành công");
         updateCurUser();
         navigate("/login");
       } else {
@@ -295,6 +279,7 @@ export default function UserProfile() {
 
   useEffect(() => {
     fetchData();
+    updateCurUser();
   }, [id]);
 
   const renderMovieGrid = (movies, showProgress = false) => {
@@ -302,14 +287,14 @@ export default function UserProfile() {
       <Row className="g-3 mp-equal-height-columns">
         {movies.map((movie) => (
           <Col xs={6} sm={4} md={3} key={movie.slug}>
-            <div
-              className="mp-movie-card"
-              onClick={() => {
-                navigate(`/infor/${movie.slug}`);
-              }}
-              style={{ cursor: "pointer" }}
-            >
-              <img src={movie.img ? movie.img : movie.image} alt={movie.name} />
+            <div className="mp-movie-card">
+              <img
+                src={movie.img ? movie.img : movie.image}
+                alt={movie.name}
+                onClick={() => {
+                  navigate(`/infor/${movie.slug}`);
+                }}
+              />
               <div className="mp-movie-actions">
                 <button
                   className="mp-action-btn"
@@ -331,7 +316,9 @@ export default function UserProfile() {
                 {!showProgress && (
                   <button
                     className="mp-action-btn"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.isPropagationStopped();
                       if (activeTab == "favorites") {
                         handleLoveFilm(movie);
                         handleRemoveLoveFilm(movie);

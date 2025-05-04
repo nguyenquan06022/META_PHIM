@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
-import axios from "axios";
+import axiosInstance from "../global/axiosInstance";
 import "../assets/css/list-comment-module.css";
 
 const ListComment = ({ currentUser = null, link = "default-page" }) => {
@@ -17,7 +17,7 @@ const ListComment = ({ currentUser = null, link = "default-page" }) => {
     try {
       setLoading(true);
 
-      const response = await axios.get(`http://localhost:3000/getListComment`, {
+      const response = await axiosInstance.get(`/getListComment`, {
         params: {
           link: link,
         },
@@ -43,11 +43,8 @@ const ListComment = ({ currentUser = null, link = "default-page" }) => {
     try {
       newCommentData.link = window.location.href;
       newCommentData.account_id = currentUser._id;
-      const res = await axios.post(
-        "http://localhost:3000/addComment",
-        newCommentData
-      );
-      console.log(res.data);
+      newCommentData.username = currentUser.username;
+      const res = await axiosInstance.post("/addComment", newCommentData);
       fetchComments();
     } catch (error) {
       console.log(error);
@@ -59,8 +56,7 @@ const ListComment = ({ currentUser = null, link = "default-page" }) => {
     try {
       obj.link = window.location.href;
       obj.account_id = currentUser._id;
-      const res = await axios.post("http://localhost:3000/editComment", obj);
-      console.log(res.data);
+      const res = await axiosInstance.post("/editComment", obj);
       fetchComments();
     } catch (error) {
       console.log(error);
@@ -74,8 +70,7 @@ const ListComment = ({ currentUser = null, link = "default-page" }) => {
       comment_id: commentId,
     };
     try {
-      const res = await axios.post("http://localhost:3000/deleteComment", obj);
-      console.log(res.data);
+      const res = await axiosInstance.post("/deleteComment", obj);
       fetchComments();
     } catch (error) {
       console.log(error);
@@ -195,7 +190,7 @@ const ListComment = ({ currentUser = null, link = "default-page" }) => {
                     <div className="lcm-comment-details">
                       <div className="lcm-comment-item-header">
                         <h6 className="lcm-comment-username">
-                          {currentUser ? currentUser.username : ""}
+                          {comment.username}
                         </h6>
                         <small className="lcm-comment-timestamp">
                           {formatDate(comment.createdAt)}

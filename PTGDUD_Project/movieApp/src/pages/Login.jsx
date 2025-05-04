@@ -2,7 +2,7 @@ import { useState, useContext } from "react";
 import loginBg from "../assets/images/login_bg.jpg";
 import { LoginContext } from "../global/LoginContext";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../global/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
@@ -15,8 +15,8 @@ function Login() {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post(
-        "http://localhost:3000/login-local",
+      const res = await axiosInstance.post(
+        "/login-local",
         {
           username: name,
           password: pwd,

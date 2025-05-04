@@ -5,7 +5,7 @@ import API from "../api/index";
 import VideoPlayer from "../components/VideoPlayer";
 import ListEp from "../components/ListEp";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../global/axiosInstance";
 import { toast } from "react-toastify";
 import "../assets/css/infor.css";
 import LoadingOverlay from "../components/LoadingOverlay";
@@ -71,14 +71,9 @@ function Infor() {
     };
 
     try {
-      const res = await axios.post(
-        "http://localhost:3000/handleLoveFilm",
-        obj,
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(res);
+      const res = await axiosInstance.post("/handleLoveFilm", obj, {
+        withCredentials: true,
+      });
       if (res.data.message == "Đã bỏ thích") {
         toast.info("Đã bỏ thích");
       } else if (
@@ -124,14 +119,9 @@ function Infor() {
     };
 
     try {
-      const res = await axios.post(
-        "http://localhost:3000/handleWatchLater",
-        obj,
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(res);
+      const res = await axiosInstance.post("/handleWatchLater", obj, {
+        withCredentials: true,
+      });
       if (res.data.message === "Đã xóa khỏi danh sách xem sau") {
         toast.info("Đã xóa khỏi danh sách xem sau");
       } else if (res.data.message === "Thêm vào danh sách xem sau thành công") {
