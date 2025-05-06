@@ -1,150 +1,61 @@
-"use client";
+import { Card } from "react-bootstrap"
+import { ArrowDown, ArrowUp, DollarSign, Percent, ShoppingCart, Users, Eye, Clock, BookOpen } from "lucide-react"
 
-import { useEffect, useState } from "react";
-import { Card, Container, Row, Col } from "react-bootstrap";
-import { FaUser, FaEye, FaUsers, FaFilm } from "react-icons/fa";
-import axiosInstance from "../global/axiosInstance";
+import styles from "../assets/css/card.module.scss"
+import classNames from "classnames/bind"
 
-function OverviewCard() {
-  const [overview, setOverview] = useState(null);
-  const [countUser, setCountUser] = useState(0);
-  const [category, setCategory] = useState("");
-  const [mean, setMean] = useState(0);
-  const [view, setView] = useState(0);
+export default function OverviewCard({ title, value, trend, trendUp, description, icon }) {
 
-  const url = [
-    "/getTheLoaiYeuThich",
-    "/getSoLuongTaiKhoan",
-    "/getThoiGianTrungBinh",
-    "/getSoLuotXem",
-  ];
+  const cx = classNames.bind(styles)
 
-  const getData = async () => {
-    try {
-      const [res, res1, res2, res3] = await Promise.all([
-        axiosInstance.get(url[0], { withCredentials: true }),
-        axiosInstance.get(url[1], { withCredentials: true }),
-        axiosInstance.get(url[2], { withCredentials: true }),
-        axiosInstance.get(url[3], { withCredentials: true }),
-      ]);
-      setCountUser(res1.data.count);
-      setCategory(res.data._id);
-      setMean(Math.round(res2.data.averageTime / 60));
-      setView(res3.data.total);
-    } catch (error) {
-      console.error("Error fetching data:", error);
+  const getIcon = () => {
+    console.log(icon)
+    switch (icon) {
+      case "users":
+        return <Users size={20} color="#0ea5e9" /> // màu xanh dương
+      case "eye":
+        return <Eye size={20} color="#10b981" /> // xanh lá
+      case "clock":
+        return <Clock size={20} color="#f59e0b" /> // cam
+      case "book":
+        return <BookOpen size={20} color="#a855f7" /> // tím
+      default:
+        return <Users size={20} color="#6b7280" /> // xám
     }
-  };
 
-  useEffect(() => {
-    getData();
-  }, []);
+  }
 
-  // Custom styles for dark theme
-  const containerStyle = {
-    backgroundColor: "#14181b",
-    padding: "1.5rem",
-  };
-
-  const cardStyle = {
-    backgroundColor: "#1e2329",
-    borderRadius: "0.75rem",
-    border: "none",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-  };
-
-  const titleStyle = {
-    color: "#9ca3af",
-    fontWeight: 500,
-    marginBottom: "0.5rem",
-  };
-
-  const valueStyle = {
-    color: "white",
-    fontSize: "1.875rem",
-    fontWeight: 700,
-  };
-
-  const changeStyle = {
-    color: "#10b981",
-    fontSize: "0.875rem",
-  };
-
-  const iconContainerStyle = {
-    position: "absolute",
-    top: "1rem",
-    right: "1rem",
-    fontSize: "1.5rem",
-  };
+  const trendClass = cx({
+    "d-flex align-items-center rounded-pill px-2 py-1": true,
+    "bg-success bg-opacity-10 text-success": trendUp,
+    "bg-danger bg-opacity-10 text-danger": !trendUp,
+  })
 
   return (
-    <div style={containerStyle}>
-      <Container fluid>
-        <Row>
-          {/* Card 1 - Thời gian xem trung bình */}
-          <Col md={3} className="mb-3">
-            <Card style={cardStyle}>
-              <Card.Body className="position-relative">
-                <div style={{ ...iconContainerStyle, color: "#6d28d9" }}>
-                  <FaUser />
-                </div>
-                <h5 style={titleStyle}>Thời gian xem trung bình</h5>
-                <p style={valueStyle}>{mean} minutes</p>
-                <p style={changeStyle}>Trung bình mỗi phút/ người dùng</p>
-              </Card.Body>
-            </Card>
-          </Col>
-
-          {/* Card 2 - Số lượt xem phim */}
-          <Col md={3} className="mb-3">
-            <Card style={cardStyle}>
-              <Card.Body className="position-relative">
-                <div style={{ ...iconContainerStyle, color: "#8b5cf6" }}>
-                  <FaEye />
-                </div>
-                <h5 style={titleStyle}>Số lượt xem phim</h5>
-                <p style={valueStyle}>{view}</p>
-                <p style={changeStyle}>
-                  Số lượng xem phim trong tháng {new Date().getMonth() + 1}
-                </p>
-              </Card.Body>
-            </Card>
-          </Col>
-
-          {/* Card 3 - Người dùng mới */}
-          <Col md={3} className="mb-3">
-            <Card style={cardStyle}>
-              <Card.Body className="position-relative">
-                <div style={{ ...iconContainerStyle, color: "#ec4899" }}>
-                  <FaUsers />
-                </div>
-                <h5 style={titleStyle}>Người dùng mới</h5>
-                <p style={valueStyle}>{countUser} </p>
-                <p style={changeStyle}>
-                  Số lượng người đăng ký mới trong tháng{" "}
-                  {new Date().getMonth() + 1}
-                </p>
-              </Card.Body>
-            </Card>
-          </Col>
-
-          {/* Card 4 - Thể loại yêu thích */}
-          <Col md={3} className="mb-3">
-            <Card style={cardStyle}>
-              <Card.Body className="position-relative">
-                <div style={{ ...iconContainerStyle, color: "#3b82f6" }}>
-                  <FaFilm />
-                </div>
-                <h5 style={titleStyle}>Thể loại yêu thích</h5>
-                <p style={valueStyle}>{category}</p>
-                <p style={changeStyle}>Thể loại yêu thích</p>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
-    </div>
-  );
+    <Card
+      style={{ backgroundColor: "rgba(31, 41, 55, 0.5)", transition: "all 0.2s" }}
+      className={cx("h-100 hover-card")}
+    >
+      <Card.Body className={cx("p-4")} style={{ border: "1px solid #374151", borderRadius: "0.5rem" }}>
+        <div className={cx("d-flex align-items-center justify-content-between")}>
+          <div className={cx("rounded p-2")} style={{ backgroundColor: "rgba(55, 65, 81, 0.5)" }}>
+            {getIcon()}
+          </div>
+          <div className={trendClass} style={{ fontSize: "0.75rem" }}>
+            {trendUp ? <ArrowUp size={12} className={cx("me-1")} /> : <ArrowDown size={12} className={cx("me-1")} />}
+            {trend}
+          </div>
+        </div>
+        <div className={cx("mt-3")}>
+          <p className={cx("text-secondary mb-1")} style={{ fontSize: "0.875rem" }}>
+            {title}
+          </p>
+          <h3 className={cx("text-white fs-3 fw-bold mb-1")}>{value}</h3>
+          <p className={cx("text-secondary mb-0")} style={{ fontSize: "0.75rem" }}>
+            {description}
+          </p>
+        </div>
+      </Card.Body>
+    </Card>
+  )
 }
-
-export default OverviewCard;

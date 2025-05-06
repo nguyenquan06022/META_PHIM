@@ -7,6 +7,12 @@ function router(app) {
   app.get("/getThoiGianTrungBinh", userInforControllers.getThoiGianTrungBinh);
   app.get("/getSoLuotXem", userInforControllers.getSoLuotXem);
   app.get("/getSoLuotXemNgay", userInforControllers.getSoLuotXemNgay);
+  app.put("/capnhatuser/:iduser", userInforControllers.capNhatUser);
+  app.delete("/xoauser/:iduser", userInforControllers.xoaUser);
+  app.get("/getDsUser", userInforControllers.getDsUser);
+
+
+  
 
   app.get("/getCurrentUser", userInforControllers.getCurrentUser);
   app.get("/getUserInfor", userInforControllers.showUserInfor);

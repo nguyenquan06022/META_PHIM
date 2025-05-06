@@ -505,6 +505,49 @@ class userInforControllers {
       lastMonth: arrPre,
     });
   };
+
+
+  getDsUser(req, res, next) {
+    UserModel.find({})
+      .then((data) => {
+        if (!data) {
+          return res.status(404).json({ message: "Không tìm thấy người dùng" });
+        }
+        return res.status(200).json(data);
+      })
+      .catch((err) => next(err));
+  }
+
+  async capNhatUser(req, res, next) {
+    const iduser = req.params.iduser;
+    await UserModel.findOneAndUpdate({ _id: iduser }, { role: "admin" }, { new: true })
+      .then((updatedUser) => {
+        if (!updatedUser) {
+          return res.status(404).json({ message: "Không tìm thấy người dùng" });
+        }
+        return res.status(200).json(updatedUser);
+      })
+      .catch((err) => next(err));
+  }
+
+  xoaUser(req, res, next) {
+
+    const iduser = req.params.iduser;
+    console.log("Xóa người dùng:", iduser);
+
+    UserModel.findOneAndDelete({ _id: iduser })
+      .then((data) => {
+        if (!data) {
+          return res.status(404).json({ message: "Không tìm thấy người dùng" });
+        }
+
+        return res.status(200).json({ message: "Xóa người dùng thành công" });
+
+      })
+
+
+
+  }
 }
 
 function getLastDayOfMonth(year, month) {

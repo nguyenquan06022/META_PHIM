@@ -15,7 +15,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import UserProfile from "./pages/User";
 import OAuthSuccess from "./pages/OAuthSuccess";
 import Dashboard from "./pages/DashBoard";
-import "@coreui/coreui/dist/css/coreui.min.css";
+// import "@coreui/coreui/dist/css/coreui.min.css";
 import "react-toastify/dist/ReactToastify.css"; // <-- Đặt cuối
 
 function App() {
