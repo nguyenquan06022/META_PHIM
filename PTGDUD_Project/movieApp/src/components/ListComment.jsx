@@ -52,7 +52,11 @@ const ListComment = ({ currentUser = null, link = "default-page" }) => {
   };
 
   const handleEditComment = async (commentId, newContent) => {
-    const obj = { comment_id: commentId, content: newContent };
+    const obj = {
+      comment_id: commentId,
+      content: newContent,
+      username: currentUser.username,
+    };
     try {
       obj.link = window.location.href;
       obj.account_id = currentUser._id;

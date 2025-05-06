@@ -88,42 +88,58 @@ function Watch() {
     }
   }, [user, slug, location]);
 
-  useEffect(() => {
-    if (watchContinue) {
-      const currentPath = window.location.pathname + window.location.search;
-      if (isFirstLoad.current) {
-        if (currentPath === watchContinue.linkEp) {
-          setShowModal(false);
-          setTimeout(() => {
-            if (videoRef.current) {
-              videoRef.current.currentTime = watchContinue.timeContinue;
-            }
-          }, 500);
-        } else {
-          setShowModal(true);
-        }
-        isFirstLoad.current = false;
-      } else {
-        setShowModal(false);
-      }
-    }
-  }, [watchContinue]);
+  // useEffect(() => {
+  //   if (watchContinue) {
+  //     const currentPath = window.location.pathname + window.location.search;
+  //     if (isFirstLoad.current) {
+  //       if (currentPath === watchContinue.linkEp) {
+  //         setShowModal(false);
+  //         setTimeout(() => {
+  //           if (videoRef.current) {
+  //             videoRef.current.currentTime = watchContinue.timeContinue;
+  //           }
+  //         }, 500);
+  //       } else {
+  //         setShowModal(true);
+  //       }
+  //       isFirstLoad.current = false;
+  //     } else {
+  //       setShowModal(false);
+  //     }
+  //   }
+  // }, [watchContinue]);
+
+  // useEffect(() => {
+  //   if (watchContinue) {
+  //     const currentPath = window.location.pathname + window.location.search;
+  //     if (currentPath === watchContinue.linkEp) {
+  //       setShowModal(false);
+  //       setTimeout(() => {
+  //         if (videoRef.current) {
+  //           videoRef.current.currentTime = watchContinue.timeContinue;
+  //         }
+  //       }, 500);
+  //     } else {
+  //       setShowModal(true);
+  //     }
+  //   }
+  // }, [slug]);
 
   useEffect(() => {
-    if (watchContinue) {
-      const currentPath = window.location.pathname + window.location.search;
-      if (currentPath === watchContinue.linkEp) {
-        setShowModal(false);
+    if (!watchContinue) return;
+    const currentPath = window.location.pathname + window.location.search;
+    const shouldShowModal = currentPath !== watchContinue.linkEp;
+
+    if (isFirstLoad.current) {
+      if (!shouldShowModal && videoRef.current) {
         setTimeout(() => {
-          if (videoRef.current) {
-            videoRef.current.currentTime = watchContinue.timeContinue;
-          }
+          videoRef.current.currentTime = watchContinue.timeContinue;
         }, 500);
-      } else {
-        setShowModal(true);
       }
+      setShowModal(shouldShowModal);
+      isFirstLoad.current = false;
     }
-  }, [slug]);
+  }, [watchContinue, slug]);
 
   if (!linkVideo) {
     return <LoadingOverlay isLoading={linkVideo == null}></LoadingOverlay>;
